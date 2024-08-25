@@ -10,22 +10,23 @@ import HandymanOutlinedIcon from '@mui/icons-material/HandymanOutlined.js';
 import LocalGroceryStoreOutlinedIcon from '@mui/icons-material/LocalGroceryStoreOutlined.js';
 import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined.js';
 import {Link, Outlet} from 'react-router-dom'
-
+import {useState} from 'react';
 
 
 const ItemButtonSX = {
     minHeight: 48,
-    justifyContent: open ? 'initial' : 'center',
-    px: 2.5,
+    justifyContent: 'center',
+    px: 1.6,
 }
 
 const ItemIconSX = {
     minWidth: 0,
-    mr: open ? 3 : 'auto',
+    mr: 'auto',
     justifyContent: 'center',
 }
 
 function Layout() {
+    const [selected, setSelected] = useState('Statistics')
 
     return (
         <Box sx={{display: 'flex'}}>
@@ -52,7 +53,8 @@ function Layout() {
                     <ListItem disablePadding sx={{display: 'block'}}>
                         <Link to='/statistics'>
                             <Tooltip title='Statistics' placement='right'>
-                                <ListItemButton sx={ItemButtonSX}>
+                                <ListItemButton onClick={e => setSelected('Statistics')}
+                                                selected={selected === 'Statistics' ? true : false} sx={ItemButtonSX}>
                                     <ListItemIcon sx={ItemIconSX}>
                                         <EqualizerOutlinedIcon/>
                                     </ListItemIcon>
@@ -63,7 +65,8 @@ function Layout() {
                     <ListItem disablePadding sx={{display: 'block'}}>
                         <Link to='/'>
                             <Tooltip title='Storage' placement='right'>
-                                <ListItemButton sx={ItemButtonSX}>
+                                <ListItemButton onClick={e => setSelected('Storage')}
+                                                selected={selected === 'Storage' ? true : false} sx={ItemButtonSX}>
                                     <ListItemIcon sx={ItemIconSX}>
                                         <WarehouseOutlinedIcon/>
                                     </ListItemIcon>
@@ -74,7 +77,8 @@ function Layout() {
                     <ListItem disablePadding sx={{display: 'block'}}>
                         <Link to='/service'>
                             <Tooltip title='Service' placement='right'>
-                                <ListItemButton sx={ItemButtonSX}>
+                                <ListItemButton onClick={e => setSelected('Service')}
+                                                selected={selected === 'Service' ? true : false} sx={ItemButtonSX}>
                                     <ListItemIcon sx={ItemIconSX}>
                                         <HandymanOutlinedIcon/>
                                     </ListItemIcon>
@@ -85,7 +89,8 @@ function Layout() {
                     <ListItem disablePadding sx={{display: 'block'}}>
                         <Link to='/store'>
                             <Tooltip title='Store' placement='right'>
-                                <ListItemButton sx={ItemButtonSX}>
+                                <ListItemButton onClick={e => setSelected('Store')}
+                                                selected={selected === 'Store' ? true : false} sx={ItemButtonSX}>
                                     <ListItemIcon sx={ItemIconSX}>
                                         <LocalGroceryStoreOutlinedIcon/>
                                     </ListItemIcon>
@@ -96,7 +101,8 @@ function Layout() {
                     <ListItem disablePadding sx={{display: 'block'}}>
                         <Link to='/finance'>
                             <Tooltip title='Finance' placement='right'>
-                                <ListItemButton sx={ItemButtonSX}>
+                                <ListItemButton onClick={e => setSelected('Finance')}
+                                                selected={selected === 'Finance' ? true : false} sx={ItemButtonSX}>
                                     <ListItemIcon sx={ItemIconSX}>
                                         <MonetizationOnOutlinedIcon/>
                                     </ListItemIcon>
