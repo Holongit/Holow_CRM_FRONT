@@ -1,9 +1,11 @@
-import {Container, Grid} from '@mui/material';
+import {useEffect, useState} from 'react';
+
+import {Container, Grid, LinearProgress} from '@mui/material';
+import axios from 'axios';
 
 import AppHeader from '../../widgets/Storage/AppHeader/AppHeader.jsx';
 import AppBody from '../../widgets/Storage/AppBody/AppBody.jsx';
-import axios from 'axios';
-import {useEffect, useState} from 'react';
+import Box from '@mui/material/Box';
 
 
 const API = axios.create({
@@ -31,7 +33,10 @@ function Storage() {
             })
         API
             .get('remains/')
-            .then((response) => setRemainsList(response.data.results))
+            .then((response) => {
+                setRemainsList(response.data.results)
+                setLoading(false)
+            })
             .catch((error) => {
                 console.log(error)
             })
@@ -41,8 +46,11 @@ function Storage() {
     const [goodsList, setGoodList] = useState([])
     const [remainsList, setRemainsList] = useState([])
     const [searchRemains, setSearchRemains] = useState(remainsList)
+    const [loading, setLoading] = useState(true)
 
-    useEffect(()=>{handleSearch()},[remainsList])
+    useEffect(() => {
+        handleSearch()
+    }, [remainsList])
 
     const handleSearch = (search, storage) => {
         let remains_query = [...remainsList]
@@ -50,23 +58,29 @@ function Storage() {
             remains_query = remains_query.filter(c => c.goods.toLowerCase().includes(search.toLowerCase()))
         }
         if (storage) {
-            remains_query = remains_query.filter(c=>c.storage.toLowerCase().includes(storage.toLowerCase()))
+            remains_query = remains_query.filter(c => c.storage.toLowerCase().includes(storage.toLowerCase()))
         }
         setSearchRemains(remains_query)
     }
 
     return (
-        <Container maxWidth="false" sx={{mt: 10}}>
-            <Grid container spacing={2}
-                  direction="column"
-                  justifyContent="flex-end"
-                  alignItems="stretch"
-            >
-                <Grid item><AppHeader storageList={storageList} onSearch={handleSearch}/></Grid>
-                <Grid item><AppBody goodsList={goodsList} remainsList={searchRemains}/></Grid>
-
-            </Grid>
-        </Container>
+        <>
+            {loading
+                ?
+                <Box sx={{ width: '100%', marginTop: 8 }}><LinearProgress /></Box>
+                :
+                <Container maxWidth="false" sx={{mt: 10}}>
+                    <Grid container spacing={2}
+                          direction="column"
+                          justifyContent="flex-end"
+                          alignItems="stretch"
+                    >
+                        <Grid item><AppHeader storageList={storageList} onSearch={handleSearch}/></Grid>
+                        <Grid item><AppBody goodsList={goodsList} remainsList={searchRemains}/></Grid>
+                    </Grid>
+                </Container>
+            }
+        </>
     );
 }
 
