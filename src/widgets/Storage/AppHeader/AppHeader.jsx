@@ -1,9 +1,17 @@
-import {styled} from '@mui/material/styles';
-import {alpha, AppBar, Button, InputBase, Stack} from '@mui/material';
-import Toolbar from '@mui/material/Toolbar';
-import Divider from '@mui/material/Divider';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
-import {useEffect, useState} from 'react';
+import React from 'react'
+import {useEffect, useState} from 'react'
+
+import {styled} from '@mui/material/styles'
+import {alpha, AppBar, Button, Container, Dialog, Grid, InputBase, Slide, Stack} from '@mui/material'
+import Toolbar from '@mui/material/Toolbar'
+import Divider from '@mui/material/Divider'
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
+import IconButton from '@mui/material/IconButton'
+import Typography from '@mui/material/Typography'
+
+import StorageSettings from '../Config/StorageSettings'
+import SplitButton from '../../../shared/SplitButton'
+
 
 
 const Search = styled('div')(({theme}) => ({
@@ -19,7 +27,7 @@ const Search = styled('div')(({theme}) => ({
         marginLeft: theme.spacing(1),
         width: 'auto',
     },
-}));
+}))
 
 const SearchIconWrapper = styled('div')(({theme}) => ({
     padding: theme.spacing(0, 2),
@@ -29,7 +37,7 @@ const SearchIconWrapper = styled('div')(({theme}) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-}));
+}))
 
 const StyledInputBase = styled(InputBase)(({theme}) => ({
     color: 'inherit',
@@ -46,12 +54,21 @@ const StyledInputBase = styled(InputBase)(({theme}) => ({
             },
         },
     },
-}));
+}))
 
-function AppHeader({storageList, onSearch}) {
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="left" ref={ref} {...props} />
+})
 
+function CloseIcon() {return null}
+
+export default function AppHeader({storageList, onSearch}) {
+
+    const [open, setOpen] = useState(false)
     const [search, setSearch] = useState('')
     const [storage, setStorage] = useState('')
+    const handleClickOpen = () => {setOpen(true)}
+    const handleClose = () => {setOpen(false)}
 
     useEffect(()=>{onSearch(search, storage)},[search, storage])
 
@@ -60,25 +77,29 @@ function AppHeader({storageList, onSearch}) {
             <Toolbar>
                 <Stack sx={{flexGrow: 1}} direction="row" spacing={2}>
                     {storageList && storageList.map((obj, index)=>(
-                        <Button
-                            key={index}
-                            name={obj.name}
-                            variant='contained'
-                            color={storage === obj.name ? 'info' : 'inherit'}
-                            onClick={(e)=>setStorage(e.target.name)}
-                            disableElevation>
-                            {obj.name}
-                        </Button>
+                        <SplitButton key={index}
+                                     storage={storage}
+                                     setStorage={setStorage}
+                                     name={obj.name}/>
+                        // <Button
+                        //     key={index}
+                        //     name={obj.name}
+                        //     variant='contained'
+                        //     color={storage === obj.name ? 'info' : 'inherit'}
+                        //     onClick={(e)=>setStorage(e.target.name)}
+                        //     disableElevation>
+                        //     {obj.name}
+                        // </Button>
                     ))}
                     <Button variant = 'contained'
                             color={storage === '' ? 'info' : 'inherit'}
                             name=''
                             onClick={(e)=>setStorage(e.target.name)}
-                            disableElevation>
+                            >
                         ALL
                     </Button>
                 </Stack>
-                <Button variant="text" color="inherit">config</Button>
+                <Button onClick={handleClickOpen} variant="text" color="inherit">config</Button>
             </Toolbar>
             <Divider variant="middle"/>
             <Toolbar>
@@ -99,8 +120,39 @@ function AppHeader({storageList, onSearch}) {
                     />
                 </Search>
             </Toolbar>
+            <Dialog
+                fullScreen
+                open={open}
+                onClose={handleClose}
+                TransitionComponent={Transition}
+            >
+                <AppBar sx={{ position: 'relative' }}>
+                    <Toolbar>
+                        <IconButton
+                            edge="start"
+                            color="inherit"
+                            onClick={handleClose}
+                            aria-label="close"
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                        <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                           Storage Configuration
+                        </Typography>
+                        <Button autoFocus color="inherit" onClick={handleClose}>
+                            save
+                        </Button>
+                    </Toolbar>
+                </AppBar>
+                <Container maxWidth="false" sx={{mt: 4}}>
+                    <Grid container spacing={2}
+                          direction="column"
+                          justifyContent="flex-end"
+                          alignItems="stretch"
+                    >
+                        <Grid item><StorageSettings /></Grid>
+                    </Grid>
+                </Container>
+            </Dialog>
         </AppBar>
-    );
-}
-
-export default AppHeader;
+    )}
