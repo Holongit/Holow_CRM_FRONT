@@ -1,23 +1,42 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import AddRoundedIcon from '@mui/icons-material/AddRounded';
+import * as React from 'react'
+
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
+import DialogActions from '@mui/material/DialogActions'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogTitle from '@mui/material/DialogTitle'
+import AddRoundedIcon from '@mui/icons-material/AddRounded'
+import {TextField} from '@mui/material';
+import {useState} from 'react';
+import Box from '@mui/material/Box';
+
+import API_STORAGE from '../../../CONST.js';
 
 export default function AddStorage() {
-    const [open, setOpen] = React.useState(false);
 
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = () => {
-        setOpen(false);
-    };
+    const [newStorageData, setNewStorageData] = useState({
+        name: '',
+        location: '',
+        description: ''
+    })
+    const [open, setOpen] = React.useState(false)
+    const handleClickOpen = () => {setOpen(true)}
+    const handleClose = () => {setOpen(false)}
+    const handleAdd = (e) => {
+        e.preventDefault()
+        const data = JSON.stringify(newStorageData)
+        console.log(newStorageData)
+        console.log(data)
+        API_STORAGE
+            .post('storages/', data)
+            .then(response => {
+                console.log(response.data.results)
+                handleClose()
+                location.reload()
+            })
+            .catch(error => console.log(error))
+    }
 
     return (
         <React.Fragment>
@@ -27,41 +46,40 @@ export default function AddStorage() {
             <Dialog
                 open={open}
                 onClose={handleClose}
-                PaperProps={{
-                    component: 'form',
-                    onSubmit: (event) => {
-                        event.preventDefault();
-                        const formData = new FormData(event.currentTarget);
-                        const formJson = Object.fromEntries(formData.entries());
-                        const email = formJson.email;
-                        console.log(email);
-                        handleClose();
-                    },
-                }}
+                maxWidth='md'
+                fullWidth={true}
             >
-                <DialogTitle>Subscribe</DialogTitle>
+                <DialogTitle>Add storage</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>
-                        To subscribe to this website, please enter your email address here. We
-                        will send updates occasionally.
-                    </DialogContentText>
-                    <TextField
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="name"
-                        name="email"
-                        label="Email Address"
-                        type="email"
-                        fullWidth
-                        variant="standard"
-                    />
+                    <DialogContentText/>
+                    <Box
+                        component="form"
+                        sx={{'& > :not(style)': { m: 1, width: '29ch' },}}
+                        noValidate
+                        autoComplete="off"
+                    >
+                        <TextField
+                            margin='dense'
+                            id='name'
+                            label='Name'
+                            onChange={e=>setNewStorageData({...newStorageData, name: e.target.value})}/>
+                        <TextField
+                            margin='dense'
+                            id='location'
+                            label='Location'
+                            onChange={e=>setNewStorageData({...newStorageData, location: e.target.value})}/>
+                        <TextField
+                            margin='dense'
+                            id='note'
+                            label='Description'
+                            onChange={e=>setNewStorageData({...newStorageData, description: e.target.value})}/>
+                    </Box>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
-                    <Button type="submit">Subscribe</Button>
+                    <Button onClick={handleAdd}>Add</Button>
                 </DialogActions>
             </Dialog>
         </React.Fragment>
-    );
+    )
 }

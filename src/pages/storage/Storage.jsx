@@ -1,37 +1,29 @@
 import {useEffect, useState} from 'react';
 
 import {Container, Grid, LinearProgress} from '@mui/material';
-import axios from 'axios';
 
 import AppHeader from '../../widgets/Storage/AppHeader/AppHeader.jsx';
 import AppBody from '../../widgets/Storage/AppBody/AppBody.jsx';
 import Box from '@mui/material/Box';
+import API_STORAGE from '../../CONST.js';
 
-
-const API = axios.create({
-    baseURL: 'http://localhost:8000/api/v1/storage/',
-    timeout: 15000,
-    withCredentials: true,
-    xsrfHeaderName: "X-CSRFTOKEN",
-    xsrfCookieName: "csrftoken",
-})
 
 function Storage() {
 
     useEffect(() => {
-        API
+        API_STORAGE
             .get('goods/')
             .then((response) => setGoodList(response.data.results))
             .catch((error) => {
                 console.log(error)
             })
-        API
+        API_STORAGE
             .get('storages/')
             .then((response) => setStorageList(response.data.results))
             .catch((error) => {
                 console.log(error)
             })
-        API
+        API_STORAGE
             .get('remains/')
             .then((response) => {
                 setRemainsList(response.data.results)

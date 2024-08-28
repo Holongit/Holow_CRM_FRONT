@@ -9,6 +9,7 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import SplitButton from '../../../shared/SplitButton'
 import AddStorage from '../AddStorage/AddStorage'
 import ButtonConfig from '../Config/ButtonConfig';
+import API_STORAGE from '../../../CONST.js';
 
 
 
@@ -60,7 +61,6 @@ export default function AppHeader({storageList, onSearch}) {
 
     const [search, setSearch] = useState('')
     const [storage, setStorage] = useState('')
-
 
 
     useEffect(()=>{onSearch(search, storage)},[search, storage])

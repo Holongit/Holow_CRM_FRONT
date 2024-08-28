@@ -8,11 +8,27 @@ import Paper from '@mui/material/Paper'
 import Popper from '@mui/material/Popper'
 import MenuItem from '@mui/material/MenuItem'
 import MenuList from '@mui/material/MenuList'
+import API_STORAGE from '../CONST.js';
+import {useParams} from 'react-router-dom';
 
 
 const options = ['Edit', 'Delete']
 
 export default function SplitButton({storage, setStorage, name}) {
+
+    const { id } = useParams()
+
+    const handleDeleteStorage = ( id ) => {
+        const confirm = window.confirm('Delete Storage?')
+        if (confirm) {
+            API_STORAGE
+                .delete('storages/'+ id)
+                .then(response => console.log(response))
+                .catch(err => console.log(err))
+        }
+    }
+
+
     const [open, setOpen] = React.useState(false)
     const anchorRef = React.useRef(null)
     const [selectedIndex, setSelectedIndex] = React.useState(1)
