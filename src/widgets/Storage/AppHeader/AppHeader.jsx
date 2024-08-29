@@ -9,8 +9,6 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import SplitButton from '../../../shared/SplitButton'
 import AddStorage from '../AddStorage/AddStorage'
 import ButtonConfig from '../Config/ButtonConfig';
-import API_STORAGE from '../../../CONST.js';
-
 
 
 const Search = styled('div')(({theme}) => ({
@@ -73,7 +71,7 @@ export default function AppHeader({storageList, onSearch}) {
                         <SplitButton key={index}
                                      storage={storage}
                                      setStorage={setStorage}
-                                     name={obj.name}/>
+                                     obj={obj}/>
                     ))}
                     <Button variant = 'contained'
                             color={storage === '' ? 'info' : 'inherit'}

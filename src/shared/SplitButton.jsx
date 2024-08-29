@@ -1,4 +1,5 @@
 import * as React from 'react'
+
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'
@@ -8,34 +9,30 @@ import Paper from '@mui/material/Paper'
 import Popper from '@mui/material/Popper'
 import MenuItem from '@mui/material/MenuItem'
 import MenuList from '@mui/material/MenuList'
-import API_STORAGE from '../CONST.js';
-import {useParams} from 'react-router-dom';
+
+import API_STORAGE from '../CONST.js'
+import EditStorage from '../widgets/Storage/EditStorage/EditStorage.jsx';
 
 
-const options = ['Edit', 'Delete']
+export default function SplitButton({storage, setStorage, obj}) {
 
-export default function SplitButton({storage, setStorage, name}) {
-
-    const { id } = useParams()
-
-    const handleDeleteStorage = ( id ) => {
-        const confirm = window.confirm('Delete Storage?')
-        if (confirm) {
-            API_STORAGE
-                .delete('storages/'+ id)
-                .then(response => console.log(response))
-                .catch(err => console.log(err))
-        }
-    }
-
-
+    const name = obj.name
     const [open, setOpen] = React.useState(false)
     const anchorRef = React.useRef(null)
-    const [selectedIndex, setSelectedIndex] = React.useState(1)
     const handleToggle = () => {setOpen((prevOpen) => !prevOpen)}
-    const handleMenuItemClick = (event, index) => {
-        setSelectedIndex(index)
-        setOpen(false)
+    const handleMenuItemClick = () => {
+            setOpen(false)
+            const confirm = window.confirm('Delete Storage?')
+            const id = obj.id + '/'
+            if (confirm) {
+                API_STORAGE
+                    .delete('storages/'+ id)
+                    .then(response =>{
+                        console.log(response)
+                        location.reload()
+                    })
+                    .catch(err => console.log(err))
+            }
     }
     const handleClose = (event) => {
         if (anchorRef.current && anchorRef.current.contains(event.target)) {
@@ -66,6 +63,7 @@ export default function SplitButton({storage, setStorage, name}) {
                     <ArrowDropDownIcon />
                 </Button>
             </ButtonGroup>
+
             <Popper
                 sx={{
                     zIndex: 1,
@@ -87,14 +85,11 @@ export default function SplitButton({storage, setStorage, name}) {
                         <Paper>
                             <ClickAwayListener onClickAway={handleClose}>
                                 <MenuList id="split-button-menu" autoFocusItem>
-                                    {options.map((option, index) => (
-                                        <MenuItem
-                                            key={option}
-                                            onClick={(event) => handleMenuItemClick(event, index)}
+                                    <MenuItem onClick={(event) => handleMenuItemClick(event)}
                                         >
-                                            {option}
+                                            Delete
                                         </MenuItem>
-                                    ))}
+                                    <EditStorage setOpenStorage={setOpen} obj={obj} />
                                 </MenuList>
                             </ClickAwayListener>
                         </Paper>
