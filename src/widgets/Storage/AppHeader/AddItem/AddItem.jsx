@@ -6,14 +6,13 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
-import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import {TextField} from '@mui/material';
 import {useState} from 'react';
 import Box from '@mui/material/Box';
 
-import API_STORAGE from '../../../CONST.js';
+import {API_STORAGE} from '../../../../CONST.js';
 
-export default function AddStorage() {
+export default function AddItem({clientsList, storageDocList}) {
 
     const [newStorageData, setNewStorageData] = useState({
         name: '',
@@ -41,7 +40,7 @@ export default function AddStorage() {
     return (
         <React.Fragment>
             <Button variant="text" color='inherit' onClick={handleClickOpen}>
-                <AddRoundedIcon fontSize='medium'/>
+                AddItem
             </Button>
             <Dialog
                 open={open}

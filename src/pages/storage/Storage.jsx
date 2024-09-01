@@ -5,7 +5,7 @@ import {Container, Grid, LinearProgress} from '@mui/material';
 import AppHeader from '../../widgets/Storage/AppHeader/AppHeader.jsx';
 import AppBody from '../../widgets/Storage/AppBody/AppBody.jsx';
 import Box from '@mui/material/Box';
-import API_STORAGE from '../../CONST.js';
+import {API_STORAGE} from '../../CONST.js';
 
 
 function Storage() {
@@ -15,13 +15,25 @@ function Storage() {
             .get('goods/')
             .then((response) => setGoodList(response.data.results))
             .catch((error) => {
-                console.log(error)
+                console.log(error.response)
             })
         API_STORAGE
             .get('storages/')
             .then((response) => setStorageList(response.data.results))
             .catch((error) => {
-                console.log(error)
+                console.log(error.response)
+            })
+        API_STORAGE
+            .get('doc/')
+            .then((response) => setStorageDocList(response.data.results))
+            .catch((error) => {
+                console.log(error.response)
+            })
+        API_STORAGE
+            .get('clients/')
+            .then((response) => setClientsList(response.data.results))
+            .catch((error) => {
+                console.log(error.response)
             })
         API_STORAGE
             .get('remains/')
@@ -30,7 +42,7 @@ function Storage() {
                 setLoading(false)
             })
             .catch((error) => {
-                console.log(error)
+                console.log(error.response)
             })
     }, [])
 
@@ -38,6 +50,8 @@ function Storage() {
     const [goodsList, setGoodList] = useState([])
     const [remainsList, setRemainsList] = useState([])
     const [searchRemains, setSearchRemains] = useState(remainsList)
+    const [clientsList, setClientsList] = useState([])
+    const [storageDocList, setStorageDocList] = useState([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -67,8 +81,18 @@ function Storage() {
                           justifyContent="flex-end"
                           alignItems="stretch"
                     >
-                        <Grid item><AppHeader storageList={storageList} onSearch={handleSearch}/></Grid>
-                        <Grid item><AppBody goodsList={goodsList} remainsList={searchRemains}/></Grid>
+                        <Grid item>
+                            <AppHeader clientsList={clientsList}
+                                       storageDocList={storageDocList}
+                                       storageList={storageList}
+                                       onSearch={handleSearch}
+                            />
+                        </Grid>
+                        <Grid item>
+                            <AppBody goodsList={goodsList}
+                                     remainsList={searchRemains}
+                            />
+                        </Grid>
                     </Grid>
                 </Container>
             }

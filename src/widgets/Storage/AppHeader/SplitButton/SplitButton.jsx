@@ -10,8 +10,8 @@ import Popper from '@mui/material/Popper'
 import MenuItem from '@mui/material/MenuItem'
 import MenuList from '@mui/material/MenuList'
 
-import API_STORAGE from '../CONST.js'
-import EditStorage from '../widgets/Storage/EditStorage/EditStorage.jsx';
+import {API_STORAGE} from '../../../../CONST.js'
+import EditStorage from '../EditStorage/EditStorage.jsx';
 
 
 export default function SplitButton({storage, setStorage, obj}) {

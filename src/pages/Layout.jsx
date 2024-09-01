@@ -1,3 +1,6 @@
+import {Link, Outlet} from 'react-router-dom';
+import {useState} from 'react';
+
 import {AppBar, Button, List, ListItem, ListItemButton, ListItemIcon, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -9,9 +12,7 @@ import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined.js';
 import HandymanOutlinedIcon from '@mui/icons-material/HandymanOutlined.js';
 import LocalGroceryStoreOutlinedIcon from '@mui/icons-material/LocalGroceryStoreOutlined.js';
 import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined.js';
-import {Link, Outlet} from 'react-router-dom'
-import {useState} from 'react';
-
+import {API_TOKEN_LOGOUT} from '../CONST.js';
 
 
 const ItemButtonSX = {
@@ -26,8 +27,20 @@ const ItemIconSX = {
     justifyContent: 'center',
 }
 
+const user = JSON.parse(localStorage.getItem('user'))
+
 function Layout() {
-   const [selected, setSelected] = useState('Statistics')
+    const [selected, setSelected] = useState('Storage')
+    const handleLogout = () => {
+        API_TOKEN_LOGOUT
+            .post('')
+            .then((response) => {
+                console.log(response)
+                localStorage.removeItem('user')
+                location.reload()
+            })
+            .catch(error => console.log(error))
+    }
 
     return (
         <Box sx={{display: 'flex'}}>
@@ -41,7 +54,7 @@ function Layout() {
                         Holow_CRM
                     </IconButton>
                     <Typography sx={{flexGrow: 1}} variant="h6" noWrap component="div"/>
-                    <Button variant="text" color="inherit">Login</Button>
+                    <Button onClick={handleLogout} variant="text" color="inherit">{user.username}</Button>
                 </Toolbar>
             </AppBar>
             <Box sx={{
@@ -54,7 +67,8 @@ function Layout() {
                     <ListItem disablePadding sx={{display: 'block'}}>
                         <Link to='/statistics'>
                             <Tooltip title='Statistics' placement='right'>
-                                <ListItemButton onClick={e => setSelected('Statistics')} selected={ selected === 'Statistics' ? true : false } sx={ItemButtonSX}>
+                                <ListItemButton onClick={() => setSelected('Statistics')}
+                                                selected={selected === 'Statistics'} sx={ItemButtonSX}>
                                     <ListItemIcon sx={ItemIconSX}>
                                         <EqualizerOutlinedIcon/>
                                     </ListItemIcon>
@@ -65,7 +79,8 @@ function Layout() {
                     <ListItem disablePadding sx={{display: 'block'}}>
                         <Link to='/'>
                             <Tooltip title='Storage' placement='right'>
-                                <ListItemButton onClick={e => setSelected('Storage')} selected={ selected === 'Storage' ? true : false }  sx={ItemButtonSX}>
+                                <ListItemButton onClick={() => setSelected('Storage')} selected={selected === 'Storage'}
+                                                sx={ItemButtonSX}>
                                     <ListItemIcon sx={ItemIconSX}>
                                         <WarehouseOutlinedIcon/>
                                     </ListItemIcon>
@@ -76,7 +91,8 @@ function Layout() {
                     <ListItem disablePadding sx={{display: 'block'}}>
                         <Link to='/service'>
                             <Tooltip title='Service' placement='right'>
-                                <ListItemButton onClick={e => setSelected('Service')} selected={selected === 'Service' ? true : false } sx={ItemButtonSX}>
+                                <ListItemButton onClick={() => setSelected('Service')} selected={selected === 'Service'}
+                                                sx={ItemButtonSX}>
                                     <ListItemIcon sx={ItemIconSX}>
                                         <HandymanOutlinedIcon/>
                                     </ListItemIcon>
@@ -87,7 +103,8 @@ function Layout() {
                     <ListItem disablePadding sx={{display: 'block'}}>
                         <Link to='/store'>
                             <Tooltip title='Store' placement='right'>
-                                <ListItemButton onClick={e => setSelected('Store')} selected={selected === 'Store' ? true : false } sx={ItemButtonSX}>
+                                <ListItemButton onClick={() => setSelected('Store')} selected={selected === 'Store'}
+                                                sx={ItemButtonSX}>
                                     <ListItemIcon sx={ItemIconSX}>
                                         <LocalGroceryStoreOutlinedIcon/>
                                     </ListItemIcon>
@@ -98,7 +115,8 @@ function Layout() {
                     <ListItem disablePadding sx={{display: 'block'}}>
                         <Link to='/finance'>
                             <Tooltip title='Finance' placement='right'>
-                                <ListItemButton onClick={e => setSelected('Finance')} selected={selected === 'Finance' ? true : false } sx={ItemButtonSX}>
+                                <ListItemButton onClick={() => setSelected('Finance')} selected={selected === 'Finance'}
+                                                sx={ItemButtonSX}>
                                     <ListItemIcon sx={ItemIconSX}>
                                         <MonetizationOnOutlinedIcon/>
                                     </ListItemIcon>

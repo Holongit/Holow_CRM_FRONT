@@ -6,9 +6,10 @@ import Toolbar from '@mui/material/Toolbar'
 import Divider from '@mui/material/Divider'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 
-import SplitButton from '../../../shared/SplitButton'
-import AddStorage from '../AddStorage/AddStorage'
-import ButtonConfig from '../Config/ButtonConfig';
+import SplitButton from './SplitButton/SplitButton.jsx'
+import AddStorage from './AddStorage/AddStorage'
+import ButtonConfig from './Config/ButtonConfig';
+import AddItem from './AddItem/AddItem';
 
 
 const Search = styled('div')(({theme}) => ({
@@ -54,13 +55,10 @@ const StyledInputBase = styled(InputBase)(({theme}) => ({
 }))
 
 
-export default function AppHeader({storageList, onSearch}) {
-
+export default function AppHeader({storageList, onSearch, storageDocList, clientsList}) {
 
     const [search, setSearch] = useState('')
     const [storage, setStorage] = useState('')
-
-
     useEffect(()=>{onSearch(search, storage)},[search, storage])
 
     return (
@@ -87,7 +85,9 @@ export default function AppHeader({storageList, onSearch}) {
             <Divider variant="middle"/>
             <Toolbar>
                 <Stack sx={{flexGrow: 1}} direction="row" spacing={2}>
-                    <Button variant="text" color="inherit">in</Button>
+                    <AddItem storageDocList={storageDocList}
+                             clientsList={clientsList}
+                    />
                     <Button variant="text" color="inherit">out</Button>
                     <Button variant="text" color="inherit">transport</Button>
                 </Stack>
