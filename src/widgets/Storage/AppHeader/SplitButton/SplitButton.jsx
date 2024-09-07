@@ -44,7 +44,7 @@ export default function SplitButton({storage, setStorage, obj}) {
 
     return (
         <>
-            <ButtonGroup variant="contained" ref={anchorRef}>
+            <ButtonGroup variant="outlined" ref={anchorRef}>
                 <Button name={name}
                         color={storage === name ? 'info' : 'inherit'}
                         onClick={(e)=>setStorage(e.target.name)}

@@ -71,7 +71,7 @@ export default function AppHeader({storageList, onSearch, storageDocList, client
                                      setStorage={setStorage}
                                      obj={obj}/>
                     ))}
-                    <Button variant = 'contained'
+                    <Button variant = 'outlined'
                             color={storage === '' ? 'info' : 'inherit'}
                             name=''
                             onClick={(e)=>setStorage(e.target.name)}

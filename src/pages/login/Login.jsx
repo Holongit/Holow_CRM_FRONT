@@ -3,30 +3,47 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 
 import {API_TOKEN_LOGIN} from '../../CONST.js';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import axios from 'axios';
 
 
 function Login() {
-
-
+    const [token, setToken] = useState('')
     const navigate = useNavigate()
     const [loginData, setLoginData] = useState({
         password: '',
         username: '',
     })
+    useEffect(() => {
+        axios({
+            method: 'get',
+            baseURL: 'http://localhost:8000/api/v1/auth/users/me/',
+            timeout: 2000,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token,
+            },
+            withCredentials: true,
+            xsrfHeaderName: "X-CSRFTOKEN",
+            xsrfCookieName: "csrftoken",
+        })
+            .then(response => {
+                const user = response.request.response
+                localStorage.setItem('user', user)
+                localStorage.setItem('token', token)
+                navigate('/')
+                location.reload()
+            })
+            .catch(error => console.log(error.request))
+    }, [token])
     const handleClick = (e) => {
         e.preventDefault()
         const data = JSON.stringify(loginData)
         API_TOKEN_LOGIN
             .post('', data)
             .then(response => {
-                const token = 'Token ' + JSON.parse(response.request.response).auth_token
-                const user = JSON.stringify({...loginData, token: {token}})
-                localStorage.setItem('user', user)
-                localStorage.setItem('token', token)
-                navigate('/')
-                location.reload()
+                setToken('Token ' + JSON.parse(response.request.response).auth_token)
             })
             .catch(error => console.log(error.request))
     }

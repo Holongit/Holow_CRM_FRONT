@@ -39,7 +39,11 @@ function Layout() {
                 localStorage.removeItem('user')
                 location.reload()
             })
-            .catch(error => console.log(error))
+            .catch(error => {
+                console.log(error)
+                localStorage.removeItem('user')
+                location.reload()
+            })
     }
 
     return (

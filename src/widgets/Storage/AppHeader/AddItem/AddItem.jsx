@@ -6,21 +6,28 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
-import {TextField} from '@mui/material';
-import {useState} from 'react';
-import Box from '@mui/material/Box';
+import {TextField} from '@mui/material'
+import {useState} from 'react'
+import Box from '@mui/material/Box'
 
-import {API_STORAGE} from '../../../../CONST.js';
+import {API_STORAGE} from '../../../../CONST.js'
 
 export default function AddItem({clientsList, storageDocList}) {
 
-    const [newStorageData, setNewStorageData] = useState({
-        name: '',
-        location: '',
-        description: ''
+    const [newStorageDoc, setnewStorageDoc] = useState({
+        client: '',
+        storage: '',
+        user: '',
+        type: '',
+        description: '',
+
     })
+    const [usersId, setUsersId] = useState({})
     const [open, setOpen] = React.useState(false)
-    const handleClickOpen = () => {setOpen(true)}
+    const handleClickOpen = () => {
+        setOpen(true)
+
+    }
     const handleClose = () => {setOpen(false)}
     const handleAdd = (e) => {
         e.preventDefault()
@@ -48,7 +55,7 @@ export default function AddItem({clientsList, storageDocList}) {
                 maxWidth='md'
                 fullWidth={true}
             >
-                <DialogTitle>Add storage</DialogTitle>
+                <DialogTitle>Income</DialogTitle>
                 <DialogContent>
                     <DialogContentText/>
                     <Box

@@ -35,3 +35,14 @@ export const API_TOKEN_LOGOUT = axios.create({
     xsrfCookieName: "csrftoken",
 })
 
+export const API_USERS = axios.create({
+    baseURL: 'http://localhost:8000/api/v1/auth/',
+    timeout: 2000,
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': TOKEN,
+    },
+    withCredentials: true,
+    xsrfHeaderName: "X-CSRFTOKEN",
+    xsrfCookieName: "csrftoken",
+})
