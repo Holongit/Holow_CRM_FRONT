@@ -35,7 +35,7 @@ function Login() {
                 navigate('/')
                 location.reload()
             })
-            .catch(error => console.log(error.request))
+            .catch(error => console.log(error.message + ' ' + error.code))
     }, [token])
     const handleClick = (e) => {
         e.preventDefault()
@@ -45,7 +45,7 @@ function Login() {
             .then(response => {
                 setToken('Token ' + JSON.parse(response.request.response).auth_token)
             })
-            .catch(error => console.log(error.request))
+            .catch(error => console.log(error.message + ' ' + error.code))
     }
     return (
         <>

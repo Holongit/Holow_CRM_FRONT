@@ -9,11 +9,28 @@ import Layout from './pages/Layout.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Login from './pages/login/Login.jsx';
 import Registration from './pages/registration/Registration.jsx';
+import {API_USERS} from './CONST.js';
+import {useEffect, useState} from 'react';
+import Loading from './pages/login/Loading.jsx';
 
 const user = JSON.parse(localStorage.getItem('user'))
 
 function App() {
-    if (user) {
+    const [login, setLogin] = useState(null)
+    const [loading, setLoading] = useState(true)
+    useEffect(() => {
+        API_USERS
+            .get('users/me/')
+            .then(response => {
+                setLogin(response.data)
+                setLoading(false)
+            })
+            .catch(error => {
+                console.log(error.message + ' ' + error.code)
+                setLoading(false)
+            })
+    }, [])
+    if (user && login) {
         return (
             <>
                 <Routes>
@@ -29,6 +46,10 @@ function App() {
                     <Route path='registration/' element={<Registration/>}/>
                 </Routes>
             </>
+        )
+    } else if (loading) {
+        return (
+            <Loading/>
         )
     } else {
         return (

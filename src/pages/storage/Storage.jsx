@@ -15,25 +15,25 @@ function Storage() {
             .get('goods/')
             .then((response) => setGoodList(response.data.results))
             .catch((error) => {
-                console.log(error.response)
+                console.log(error.message + ' ' + error.code)
             })
         API_STORAGE
             .get('storages/')
             .then((response) => setStorageList(response.data.results))
             .catch((error) => {
-                console.log(error.response)
+                console.log(error.message + ' ' + error.code)
             })
         API_STORAGE
             .get('doc/')
             .then((response) => setStorageDocList(response.data.results))
             .catch((error) => {
-                console.log(error.response)
+                console.log(error.message + ' ' + error.code)
             })
         API_STORAGE
             .get('clients/')
             .then((response) => setClientsList(response.data.results))
             .catch((error) => {
-                console.log(error.response)
+                console.log(error.message + ' ' + error.code)
             })
         API_STORAGE
             .get('remains/')
@@ -42,7 +42,7 @@ function Storage() {
                 setLoading(false)
             })
             .catch((error) => {
-                console.log(error.response)
+                console.log(error.message + ' ' + error.code)
             })
     }, [])
 

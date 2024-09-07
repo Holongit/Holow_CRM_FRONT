@@ -41,7 +41,7 @@ export default function AddItem({clientsList, storageDocList}) {
                 handleClose()
                 location.reload()
             })
-            .catch(error => console.log(error))
+            .catch(error => console.log(error.message + ' ' + error.code))
     }
 
     return (
