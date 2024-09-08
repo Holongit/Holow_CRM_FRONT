@@ -1,4 +1,4 @@
-import {Card, CardContent, CardHeader, CardMedia, Grid, TextField} from '@mui/material';
+import {Alert, AlertTitle, Card, CardContent, CardHeader, CardMedia, Grid, Snackbar, TextField} from '@mui/material';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 
@@ -11,10 +11,13 @@ import axios from 'axios';
 function Login() {
     const [token, setToken] = useState('')
     const navigate = useNavigate()
+    const [error, setError] = useState(null)
+    const [openSnackbar, setOpenSnackbar] = useState(false)
     const [loginData, setLoginData] = useState({
         password: '',
         username: '',
     })
+
     useEffect(() => {
         axios({
             method: 'get',
@@ -37,16 +40,26 @@ function Login() {
             })
             .catch(error => console.log(error.message + ' ' + error.code))
     }, [token])
+
     const handleClick = (e) => {
         e.preventDefault()
-        const data = JSON.stringify(loginData)
         API_TOKEN_LOGIN
-            .post('', data)
+            .post('', loginData)
             .then(response => {
-                setToken('Token ' + JSON.parse(response.request.response).auth_token)
+                setToken('Token ' + response.data.auth_token)
             })
-            .catch(error => console.log(error.message + ' ' + error.code))
+            .catch(error => {
+                console.log(error.message + ' ' + error.code)
+                if (error.response.data.password || error.response.data.username) {
+                setError('Username and password cannot be empty')
+                }
+                if (error.response.data.non_field_errors) {
+                    setError('Incorrect username or password')
+                }
+                setOpenSnackbar(true)
+            })
     }
+
     return (
         <>
             <Box display="flex"
@@ -60,7 +73,7 @@ function Login() {
                     <CardMedia>
                         <Grid container justifyContent='center'>
                             <TextField onChange={e => setLoginData({...loginData, username: e.target.value})}
-                                       sx={{margin: '10px'}} label='Username'/>
+                                       sx={{margin: '10px'}} label='Username' autoFocus={true}/>
                             <TextField onChange={e => setLoginData({...loginData, password: e.target.value})}
                                        sx={{margin: '10px'}} label='Password'/>
                         </Grid>
@@ -74,6 +87,22 @@ function Login() {
                     </CardContent>
                 </Card>
             </Box>
+            <Snackbar
+                anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+                open={openSnackbar}
+                onClose={() => setOpenSnackbar(false)}
+                autoHideDuration={5000}
+            >
+                <Alert
+                    onClose={() => setOpenSnackbar(false)}
+                    severity="error"
+                    sx={{width: '100%'}}
+                    elevation={1}
+                >
+                    <AlertTitle>Error</AlertTitle>
+                    {error}
+                </Alert>
+            </Snackbar>
         </>
     )
 }
