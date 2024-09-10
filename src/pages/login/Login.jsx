@@ -1,11 +1,13 @@
-import {Alert, AlertTitle, Card, CardContent, CardHeader, CardMedia, Grid, Snackbar, TextField} from '@mui/material';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-
-import {API_TOKEN_LOGIN} from '../../CONST.js';
 import {useEffect, useState} from 'react';
+
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import {Alert, AlertTitle, Card, CardContent, CardHeader, CardMedia, Grid, Snackbar, TextField} from '@mui/material';
+import Cookies from 'js-cookie'
+
+import {API_TOKEN_LOGIN} from '../../CONST.js';
 
 
 function Login() {
@@ -34,7 +36,7 @@ function Login() {
             .then(response => {
                 const user = response.request.response
                 localStorage.setItem('user', user)
-                localStorage.setItem('token', token)
+                Cookies.set('Token', token, {expires: 7})
                 navigate('/')
                 location.reload()
             })
