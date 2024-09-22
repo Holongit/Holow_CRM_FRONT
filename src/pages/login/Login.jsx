@@ -1,65 +1,61 @@
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 
-import {useNavigate} from 'react-router-dom';
-import axios from 'axios';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import {Alert, AlertTitle, Card, CardContent, CardHeader, CardMedia, Grid, Snackbar, TextField} from '@mui/material';
-import Cookies from 'js-cookie'
+import {
+    Alert,
+    AlertTitle,
+    Card,
+    CardContent,
+    CardHeader,
+    CardMedia,
+    CircularProgress,
+    Grid,
+    Snackbar,
+    TextField
+} from '@mui/material';
+import {useMutation} from '@tanstack/react-query';
+import Cookies from 'js-cookie';
 
-import {API_TOKEN_LOGIN} from '../../CONST.js';
+import {useLogin} from './loginStore.js';
+import {postApiTokenLogin} from '../../API/API_QUERYS.js';
 
 
 function Login() {
-    const [token, setToken] = useState('')
-    const navigate = useNavigate()
-    const [error, setError] = useState(null)
+    const setLoginUser = useLogin(state => state.loginUser)
+    const setlogoutUser = useLogin(state => state.logoutUser)
+    const [errorResponse, setErrorResponse] = useState(null)
     const [openSnackbar, setOpenSnackbar] = useState(false)
     const [loginData, setLoginData] = useState({
         password: '',
         username: '',
     })
 
-    useEffect(() => {
-        axios({
-            method: 'get',
-            baseURL: 'http://localhost:8000/api/v1/auth/users/me/',
-            timeout: 2000,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': token,
-            },
-            withCredentials: true,
-            xsrfHeaderName: "X-CSRFTOKEN",
-            xsrfCookieName: "csrftoken",
-        })
-            .then(response => {
-                const user = response.request.response
-                localStorage.setItem('user', user)
-                Cookies.set('Token', token, {expires: 7})
-                navigate('/')
-                location.reload()
-            })
-            .catch(error => console.log(error.message + ' ' + error.code))
-    }, [token])
+    const mutationLogin = useMutation({
+        mutationFn: () => {
+            return postApiTokenLogin(loginData)
+        },
+        onSuccess: data => {
+            Cookies.set('Token', data, {expires: 7})
+            setLoginUser()
+            location.reload()
+        },
+        onError: error => {
+            setlogoutUser()
+            const errorData = error.response.data
+            if (errorData.password || errorData.username) {
+                setErrorResponse('Username or password cannot be empty')
+            }
+            if (errorData.non_field_errors) {
+                setErrorResponse('Incorrect username or password')
+            }
+            setOpenSnackbar(true)
+        }
+    })
 
     const handleClick = (e) => {
         e.preventDefault()
-        API_TOKEN_LOGIN
-            .post('', loginData)
-            .then(response => {
-                setToken('Token ' + response.data.auth_token)
-            })
-            .catch(error => {
-                console.log(error.message + ' ' + error.code)
-                if (error.response.data.password || error.response.data.username) {
-                setError('Username and password cannot be empty')
-                }
-                if (error.response.data.non_field_errors) {
-                    setError('Incorrect username or password')
-                }
-                setOpenSnackbar(true)
-            })
+        mutationLogin.mutate()
     }
 
     return (
@@ -82,9 +78,27 @@ function Login() {
                     </CardMedia>
                     <CardContent>
                         <Grid container justifyContent='center'>
-                            <Button sx={{margin: '10px'}} variant='outlined' title='Login'
-                                    onClick={handleClick}>Login</Button>
-                            <Button sx={{margin: '10px'}} variant='outlined' title='Registration'>Registration</Button>
+                            {mutationLogin.isPending
+                                ? <Button sx={{margin: '10px'}}
+                                          variant='outlined'
+                                          title='Login'
+                                          disabled
+                                          size='medium'
+                                          onClick={handleClick}>
+                                    <CircularProgress color='inherit' size={25}/>
+                                </Button>
+                                : <Button sx={{margin: '10px'}}
+                                          variant='outlined'
+                                          title='Login'
+                                          size='medium'
+                                          onClick={handleClick}>
+                                    Login
+                                </Button>}
+                            <Button sx={{margin: '10px'}}
+                                    size='medium'
+                                    variant='outlined'
+                                    title='Registration'>Registration
+                            </Button>
                         </Grid>
                     </CardContent>
                 </Card>
@@ -102,7 +116,7 @@ function Login() {
                     elevation={1}
                 >
                     <AlertTitle>Error</AlertTitle>
-                    {error}
+                    {errorResponse}
                 </Alert>
             </Snackbar>
         </>

@@ -12,7 +12,12 @@ import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined.js';
 import HandymanOutlinedIcon from '@mui/icons-material/HandymanOutlined.js';
 import LocalGroceryStoreOutlinedIcon from '@mui/icons-material/LocalGroceryStoreOutlined.js';
 import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined.js';
-import {API_TOKEN_LOGOUT} from '../CONST.js';
+import {useMutation} from '@tanstack/react-query';
+import Cookies from 'js-cookie';
+
+import {useUsersMe} from '../API/API_HOOKS.js';
+import {postApiTokenLogout} from '../API/API_QUERYS.js';
+import {useLogin} from './login/loginStore.js';
 
 
 const ItemButtonSX = {
@@ -27,23 +32,25 @@ const ItemIconSX = {
     justifyContent: 'center',
 }
 
-const user = JSON.parse(localStorage.getItem('user'))
-
 function Layout() {
+    const setlogoutUser = useLogin(state => state.logoutUser)
+    const {data} = useUsersMe()
     const [selected, setSelected] = useState('Storage')
+    const mutationLogout = useMutation({
+        mutationFn: () => {
+            return postApiTokenLogout()
+        },
+        onSuccess: () => {
+            setlogoutUser()
+            Cookies.remove('Token')
+            location.reload()
+        },
+        onError: (error) => {
+            console.log(error.response.data)
+        },
+    })
     const handleLogout = () => {
-        API_TOKEN_LOGOUT
-            .post('')
-            .then((response) => {
-                console.log(response)
-                localStorage.removeItem('user')
-                location.reload()
-            })
-            .catch(error => {
-                console.log(error.message + ' ' + error.code)
-                localStorage.removeItem('user')
-                location.reload()
-            })
+        mutationLogout.mutate()
     }
 
     return (
@@ -58,7 +65,7 @@ function Layout() {
                         Holow_CRM
                     </IconButton>
                     <Typography sx={{flexGrow: 1}} variant="h6" noWrap component="div"/>
-                    <Button onClick={handleLogout} variant="text" color="inherit">{user.username}</Button>
+                    <Button onClick={handleLogout} variant="text" color="inherit">{data.username}</Button>
                 </Toolbar>
             </AppBar>
             <Box sx={{

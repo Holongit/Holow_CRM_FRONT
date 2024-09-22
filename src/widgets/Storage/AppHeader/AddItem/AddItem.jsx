@@ -10,7 +10,7 @@ import {TextField} from '@mui/material'
 import {useState} from 'react'
 import Box from '@mui/material/Box'
 
-import {API_STORAGE} from '../../../../CONST.js'
+import {API_STORAGE} from '../../../../API/API_URLS.js'
 
 export default function AddItem({clientsList, storageDocList}) {
 

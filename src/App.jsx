@@ -9,32 +9,19 @@ import Layout from './pages/Layout.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Login from './pages/login/Login.jsx';
 import Registration from './pages/registration/Registration.jsx';
-import {API_USERS} from './CONST.js';
-import {useEffect, useState} from 'react';
-import Loading from './pages/login/Loading.jsx';
+import {useUsersMe} from './API/API_HOOKS.js';
+import {useLogin} from './pages/login/loginStore.js';
 
-const user = JSON.parse(localStorage.getItem('user'))
 
 function App() {
-    const [login, setLogin] = useState(null)
-    const [loading, setLoading] = useState(true)
-    useEffect(() => {
-        API_USERS
-            .get('users/me/')
-            .then(response => {
-                setLogin(response.data)
-                setLoading(false)
-            })
-            .catch(error => {
-                console.log(error.message + ' ' + error.code)
-                setLoading(false)
-            })
-    }, [])
-    if (user && login) {
+    const userLogined = useLogin(state => state.logined)
+    const {data, failureCount} = useUsersMe()
+
+    if (data) {
         return (
             <>
                 <Routes>
-                    <Route path='/' element={<Layout/>}>
+                    <Route path='/' element={<Layout />}>
                         <Route path='/finance' element={<Finance/>}/>
                         <Route path='/' element={<Storage/>}/>
                         <Route path='/service' element={<Service/>}/>
@@ -47,17 +34,17 @@ function App() {
                 </Routes>
             </>
         )
-    } else if (loading) {
+
+    } else if (failureCount > 0) {
         return (
-            <Loading/>
+            <Login/>
         )
-    } else {
+
+    } else if (!userLogined) {
         return (
             <Login/>
         )
     }
 }
 
-
 export default App
-

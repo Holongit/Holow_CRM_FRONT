@@ -10,7 +10,7 @@ import Popper from '@mui/material/Popper'
 import MenuItem from '@mui/material/MenuItem'
 import MenuList from '@mui/material/MenuList'
 
-import {API_STORAGE} from '../../../../CONST.js'
+import {API_STORAGE} from '../../../../API/API_URLS.js'
 import EditStorage from '../EditStorage/EditStorage.jsx';
 
 

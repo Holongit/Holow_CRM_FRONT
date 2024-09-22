@@ -5,7 +5,7 @@ import {Container, Grid, LinearProgress} from '@mui/material';
 import AppHeader from '../../widgets/Storage/AppHeader/AppHeader.jsx';
 import AppBody from '../../widgets/Storage/AppBody/AppBody.jsx';
 import Box from '@mui/material/Box';
-import {API_STORAGE} from '../../CONST.js';
+import {API_STORAGE} from '../../API/API_URLS.js';
 
 
 function Storage() {
