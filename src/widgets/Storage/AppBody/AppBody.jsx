@@ -82,7 +82,7 @@ function AppBody({remainsList}, {goodsList}) {
             <TablePagination
                 rowsPerPageOptions={[10, 25, 100]}
                 component="div"
-                count={remainsList && remainsList.length}
+                count={remainsList ? remainsList.length : 0}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}
