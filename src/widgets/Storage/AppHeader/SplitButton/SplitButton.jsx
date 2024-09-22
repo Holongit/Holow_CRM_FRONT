@@ -19,26 +19,27 @@ export default function SplitButton({storage, setStorage, obj}) {
     const name = obj.name
     const [open, setOpen] = React.useState(false)
     const anchorRef = React.useRef(null)
-    const handleToggle = () => {setOpen((prevOpen) => !prevOpen)}
+    const handleToggle = () => {
+        setOpen((prevOpen) => !prevOpen)
+    }
     const handleMenuItemClick = () => {
-            setOpen(false)
-            const confirm = window.confirm('Delete Storage?')
-            const id = obj.id + '/'
-            if (confirm) {
-                API_STORAGE
-                    .delete('storages/'+ id)
-                    .then(response =>{
-                        console.log(response)
-                        location.reload()
-                    })
-                    .catch(err => console.log(err))
-            }
+        setOpen(false)
+        const confirm = window.confirm('Delete Storage?')
+        const id = obj.id + '/'
+        if (confirm) {
+            API_STORAGE
+                .delete('storages/' + id)
+                .then(response => {
+                    console.log(response)
+                    location.reload()
+                })
+                .catch(err => console.log(err))
+        }
     }
     const handleClose = (event) => {
         if (anchorRef.current && anchorRef.current.contains(event.target)) {
             return
         }
-
         setOpen(false)
     }
 
@@ -47,7 +48,7 @@ export default function SplitButton({storage, setStorage, obj}) {
             <ButtonGroup variant="outlined" ref={anchorRef}>
                 <Button name={name}
                         color={storage === name ? 'info' : 'inherit'}
-                        onClick={(e)=>setStorage(e.target.name)}
+                        onClick={(e) => setStorage(e.target.name)}
                 >
                     {name}
                 </Button>
@@ -60,7 +61,7 @@ export default function SplitButton({storage, setStorage, obj}) {
                     aria-haspopup="menu"
                     onClick={handleToggle}
                 >
-                    <ArrowDropDownIcon />
+                    <ArrowDropDownIcon/>
                 </Button>
             </ButtonGroup>
 
@@ -74,7 +75,7 @@ export default function SplitButton({storage, setStorage, obj}) {
                 transition
                 disablePortal
             >
-                {({ TransitionProps, placement }) => (
+                {({TransitionProps, placement}) => (
                     <Grow
                         {...TransitionProps}
                         style={{
@@ -86,10 +87,10 @@ export default function SplitButton({storage, setStorage, obj}) {
                             <ClickAwayListener onClickAway={handleClose}>
                                 <MenuList id="split-button-menu" autoFocusItem>
                                     <MenuItem onClick={(event) => handleMenuItemClick(event)}
-                                        >
-                                            Delete
-                                        </MenuItem>
-                                    <EditStorage setOpenStorage={setOpen} obj={obj} />
+                                    >
+                                        Delete
+                                    </MenuItem>
+                                    <EditStorage setOpenStorage={setOpen} obj={obj}/>
                                 </MenuList>
                             </ClickAwayListener>
                         </Paper>

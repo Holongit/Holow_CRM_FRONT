@@ -1,4 +1,4 @@
-import * as React from 'react'
+import {useState} from 'react';
 
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -8,44 +8,44 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import {TextField} from '@mui/material';
-import {useState} from 'react';
 import Box from '@mui/material/Box';
 
-import {API_STORAGE} from '../../../../API/API_URLS.js';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
+import {postApiAddStorage} from '../../../../API/API_FUNC.js';
 
 export default function AddStorage() {
+
+    const queryClient = useQueryClient()
+    const useAddStorage = useMutation({
+        mutationFn: () => postApiAddStorage(newStorageData),
+        onSuccess: () => {
+            setOpen(false)
+            queryClient.invalidateQueries(['storage', 'storages'])
+        },
+        onError: (error) => console.log(error),
+    })
 
     const [newStorageData, setNewStorageData] = useState({
         name: '',
         location: '',
         description: ''
     })
-    const [open, setOpen] = React.useState(false)
+    const [open, setOpen] = useState(false)
     const handleClickOpen = () => {setOpen(true)}
-    const handleClose = () => {setOpen(false)}
-    const handleAdd = (e) => {
+    const handleClickClose = () => {setOpen(false)}
+    const handleClickAdd = (e) => {
         e.preventDefault()
-        const data = JSON.stringify(newStorageData)
-        console.log(newStorageData)
-        console.log(data)
-        API_STORAGE
-            .post('storages/', data)
-            .then(response => {
-                console.log(response.data.results)
-                handleClose()
-                location.reload()
-            })
-            .catch(error => console.log(error))
+        useAddStorage.mutate()
     }
 
     return (
-        <React.Fragment>
+        <>
             <Button variant="text" color='inherit' onClick={handleClickOpen}>
                 <AddRoundedIcon fontSize='medium'/>
             </Button>
             <Dialog
                 open={open}
-                onClose={handleClose}
+                onClose={handleClickClose}
                 maxWidth='md'
                 fullWidth={true}
             >
@@ -76,10 +76,10 @@ export default function AddStorage() {
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleAdd}>Add</Button>
+                    <Button onClick={handleClickClose}>Cancel</Button>
+                    <Button onClick={handleClickAdd}>Add</Button>
                 </DialogActions>
             </Dialog>
-        </React.Fragment>
+        </>
     )
 }
