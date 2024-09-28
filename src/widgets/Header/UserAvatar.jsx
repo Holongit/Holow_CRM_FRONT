@@ -7,9 +7,11 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
 import LogoutButton from '../Login/LogoutButton';
+import {useUsersMe} from "../../API/API_HOOKS.js";
 
 
-export default function UserAvatar({user}) {
+export default function UserAvatar() {
+    const {data: user} = useUsersMe()
     const [anchorElUser, setAnchorElUser] = useState(null)
     const handleOpenUserMenu = (event) => {
         setAnchorElUser(event.currentTarget);

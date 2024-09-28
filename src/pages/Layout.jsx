@@ -13,7 +13,6 @@ import HandymanOutlinedIcon from '@mui/icons-material/HandymanOutlined.js';
 import LocalGroceryStoreOutlinedIcon from '@mui/icons-material/LocalGroceryStoreOutlined.js';
 import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined.js';
 
-import {useUsersMe} from '../API/API_HOOKS.js';
 import UserAvatar from '../widgets/Header/UserAvatar';
 
 
@@ -30,7 +29,7 @@ const ItemIconSX = {
 }
 
 function Layout() {
-    const {data} = useUsersMe()
+
     const [selected, setSelected] = useState('Storage')
 
     return (
@@ -45,7 +44,7 @@ function Layout() {
                         Holow_CRM
                     </IconButton>
                     <Typography sx={{flexGrow: 1}} variant="h6" noWrap component="div"/>
-                    <UserAvatar user={data}/>
+                    <UserAvatar/>
                 </Toolbar>
             </AppBar>
             <Box sx={{

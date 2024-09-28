@@ -10,8 +10,8 @@ import {TextField} from '@mui/material';
 import {useState} from 'react';
 import Box from '@mui/material/Box';
 
-import {API_STORAGE} from '../../../../API/API_URLS.js';
 import MenuItem from '@mui/material/MenuItem';
+import {useStorageUpdate} from "../../../../API/API_HOOKS.js";
 
 export default function EditStorage({setOpenStorage, obj}) {
 
@@ -21,23 +21,16 @@ export default function EditStorage({setOpenStorage, obj}) {
         description: obj.description,
     })
     const [open, setOpen] = React.useState(false)
-    const handleClickOpen = () => {setOpen(true)}
+    const handleClickOpen = () => setOpen(true)
     const handleClose = () => {
         setOpen(false)
         setOpenStorage(false)
     }
+    const storageUpdate = useStorageUpdate(newStorageData, obj)
     const handleAdd = (e) => {
         e.preventDefault()
-        const id = obj.id + '/'
-        const data = JSON.stringify(newStorageData)
-        API_STORAGE
-            .put('storages/'+ id, data)
-            .then(response => {
-                console.log(response.data.results)
-                handleClose()
-                location.reload()
-            })
-            .catch(error => console.log(error))
+        storageUpdate.mutate()
+        handleClose()
     }
 
     return (

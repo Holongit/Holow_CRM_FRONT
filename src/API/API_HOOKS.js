@@ -1,7 +1,8 @@
-import {useQuery} from '@tanstack/react-query';
+import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 
 import {useLogin} from '../pages/login/loginStore.js';
 import {API_STORAGE, API_USERS_ME} from './API_URLS.js';
+import {deleteApiStorage, postApiAddStorage, updateApiStorage} from "./API_FUNC.js";
 
 
 export const useUsersMe = () => {
@@ -82,5 +83,36 @@ export const useRemainsList = () => {
     })
 }
 
+export const useStorageUpdate = (newStorageData, obj) => {
+    const queryClient = useQueryClient()
+    const userLogined = useLogin(state => state.logined)
+    return useMutation({
+        mutationFn: () => updateApiStorage(newStorageData, obj),
+        onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'storages']}),
+        onError: (error) => console.log(error),
+        enabled: userLogined,
+    })
+}
 
+export const useAddStorage = (storageData) => {
+    const queryClient = useQueryClient()
+    const userLogined = useLogin(state => state.logined)
+    return useMutation({
+        mutationFn: () => postApiAddStorage(storageData),
+        onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'storages']}),
+        onError: (error) => console.log(error),
+        enabled: userLogined,
+    })
+}
+
+export const useDeleteStorage = (obj) => {
+    const userLogined = useLogin(state => state.logined)
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: () => deleteApiStorage(obj),
+        onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'storages']}),
+        onError: (error) => console.log(error),
+        enabled: userLogined,
+    })
+}
 

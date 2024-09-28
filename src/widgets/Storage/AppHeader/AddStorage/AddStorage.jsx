@@ -10,32 +10,23 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import {TextField} from '@mui/material';
 import Box from '@mui/material/Box';
 
-import {useMutation, useQueryClient} from '@tanstack/react-query';
-import {postApiAddStorage} from '../../../../API/API_FUNC.js';
+import {useAddStorage} from "../../../../API/API_HOOKS.js";
 
 export default function AddStorage() {
 
-    const queryClient = useQueryClient()
-    const useAddStorage = useMutation({
-        mutationFn: () => postApiAddStorage(newStorageData),
-        onSuccess: () => {
-            setOpen(false)
-            queryClient.invalidateQueries(['storage', 'storages'])
-        },
-        onError: (error) => console.log(error),
-    })
-
-    const [newStorageData, setNewStorageData] = useState({
+    const [storageData, setStorageData] = useState({
         name: '',
         location: '',
         description: ''
     })
     const [open, setOpen] = useState(false)
-    const handleClickOpen = () => {setOpen(true)}
-    const handleClickClose = () => {setOpen(false)}
+    const addStorage = useAddStorage(storageData)
+    const handleClickOpen = () => setOpen(true)
+    const handleClickClose = () => setOpen(false)
     const handleClickAdd = (e) => {
         e.preventDefault()
-        useAddStorage.mutate()
+        addStorage.mutate()
+        setOpen(false)
     }
 
     return (
@@ -62,17 +53,17 @@ export default function AddStorage() {
                             margin='dense'
                             id='name'
                             label='Name'
-                            onChange={e=>setNewStorageData({...newStorageData, name: e.target.value})}/>
+                            onChange={e=>setStorageData({...storageData, name: e.target.value})}/>
                         <TextField
                             margin='dense'
                             id='location'
                             label='Location'
-                            onChange={e=>setNewStorageData({...newStorageData, location: e.target.value})}/>
+                            onChange={e=>setStorageData({...storageData, location: e.target.value})}/>
                         <TextField
                             margin='dense'
                             id='note'
                             label='Description'
-                            onChange={e=>setNewStorageData({...newStorageData, description: e.target.value})}/>
+                            onChange={e=>setStorageData({...storageData, description: e.target.value})}/>
                     </Box>
                 </DialogContent>
                 <DialogActions>
