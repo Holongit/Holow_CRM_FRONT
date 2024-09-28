@@ -7,10 +7,8 @@ import ClickAwayListener from '@mui/material/ClickAwayListener'
 import Grow from '@mui/material/Grow'
 import Paper from '@mui/material/Paper'
 import Popper from '@mui/material/Popper'
-import MenuItem from '@mui/material/MenuItem'
 import MenuList from '@mui/material/MenuList'
 
-import {API_STORAGE} from '../../../../API/API_URLS.js'
 import EditStorage from '../EditStorage/EditStorage.jsx';
 import DeleteStorage from '../DeleteStorage/DeleteStorage';
 
@@ -22,20 +20,6 @@ export default function SplitButton({storage, setStorage, obj}) {
     const anchorRef = React.useRef(null)
     const handleToggle = () => {
         setOpen((prevOpen) => !prevOpen)
-    }
-    const handleMenuItemClick = () => {
-        setOpen(false)
-        const confirm = window.confirm('Delete Storage?')
-        const id = obj.id + '/'
-        if (confirm) {
-            API_STORAGE
-                .delete('storages/' + id)
-                .then(response => {
-                    console.log(response)
-                    location.reload()
-                })
-                .catch(err => console.log(err))
-        }
     }
     const handleClose = (event) => {
         if (anchorRef.current && anchorRef.current.contains(event.target)) {
@@ -65,7 +49,6 @@ export default function SplitButton({storage, setStorage, obj}) {
                     <ArrowDropDownIcon/>
                 </Button>
             </ButtonGroup>
-
             <Popper
                 sx={{
                     zIndex: 1,

@@ -1,24 +1,16 @@
 import MenuItem from '@mui/material/MenuItem';
-import {useMutation, useQueryClient} from '@tanstack/react-query';
-import {deleteApiStorage} from '../../../../API/API_FUNC.js';
+
+import {useDeleteStorage} from "../../../../API/API_HOOKS.js";
 
 export default function DeleteStorage({obj, setOpenStorage}) {
 
-    const queryClient = useQueryClient()
-
-    const useDeleteStorage = useMutation({
-        mutationFn: () => deleteApiStorage(obj),
-        onSuccess: () => queryClient.invalidateQueries(['storage', 'storages']),
-        onError: (error) => console.log(error)
-    })
-
+    const deleteStorage = useDeleteStorage(obj)
     const handleMenuItemClick = () => {
         const confirm = window.confirm('Delete Storage?')
         if (confirm) {
-            useDeleteStorage.mutate()
+            deleteStorage.mutate()
         }
         setOpenStorage(false)
-
     }
 
     return (

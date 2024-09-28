@@ -18,3 +18,8 @@ export async function deleteApiStorage(obj) {
     const id = obj.id + '/'
     return await API_STORAGE.delete('storages/' + id)
 }
+
+export async function updateApiStorage(data, obj) {
+    const id = obj.id + '/'
+    return API_STORAGE.put('storages/' + id, data)
+}
