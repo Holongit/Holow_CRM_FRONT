@@ -12,6 +12,7 @@ import MenuList from '@mui/material/MenuList'
 
 import {API_STORAGE} from '../../../../API/API_URLS.js'
 import EditStorage from '../EditStorage/EditStorage.jsx';
+import DeleteStorage from '../DeleteStorage/DeleteStorage';
 
 
 export default function SplitButton({storage, setStorage, obj}) {
@@ -86,10 +87,7 @@ export default function SplitButton({storage, setStorage, obj}) {
                         <Paper>
                             <ClickAwayListener onClickAway={handleClose}>
                                 <MenuList id="split-button-menu" autoFocusItem>
-                                    <MenuItem onClick={(event) => handleMenuItemClick(event)}
-                                    >
-                                        Delete
-                                    </MenuItem>
+                                    <DeleteStorage setOpenStorage={setOpen} obj={obj}/>
                                     <EditStorage setOpenStorage={setOpen} obj={obj}/>
                                 </MenuList>
                             </ClickAwayListener>

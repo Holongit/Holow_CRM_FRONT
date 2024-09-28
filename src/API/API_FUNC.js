@@ -13,3 +13,8 @@ export async function postApiTokenLogout() {
 export async function postApiAddStorage(data) {
     return await API_STORAGE.post('storages/', data)
 }
+
+export async function deleteApiStorage(obj) {
+    const id = obj.id + '/'
+    return await API_STORAGE.delete('storages/' + id)
+}
