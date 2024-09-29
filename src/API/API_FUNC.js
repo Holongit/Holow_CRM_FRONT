@@ -23,3 +23,7 @@ export async function updateApiStorage(data, obj) {
     const id = obj.id + '/'
     return API_STORAGE.put('storages/' + id, data)
 }
+
+export async function postApiStorageDoc(data) {
+    return await API_STORAGE.post('doc/', data)
+}

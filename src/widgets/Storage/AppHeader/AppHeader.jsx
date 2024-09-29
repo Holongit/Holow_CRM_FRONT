@@ -85,9 +85,7 @@ export default function AppHeader({storageList, onSearch, storageDocList, client
             <Divider variant="middle"/>
             <Toolbar>
                 <Stack sx={{flexGrow: 1}} direction="row" spacing={2}>
-                    <AddItem storageDocList={storageDocList}
-                             clientsList={clientsList}
-                    />
+                    <AddItem />
                     <Button variant="text" color="inherit">out</Button>
                     <Button variant="text" color="inherit">transport</Button>
                 </Stack>
