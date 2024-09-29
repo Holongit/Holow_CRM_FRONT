@@ -2,7 +2,13 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 
 import {useLogin} from '../pages/login/loginStore.js';
 import {API_STORAGE, API_USERS_ME} from './API_URLS.js';
-import {deleteApiStorage, postApiAddStorage, postApiStorageDoc, updateApiStorage} from "./API_FUNC.js";
+import {
+    deleteApiStorage,
+    deleteApiStorageDoc,
+    postApiAddStorage,
+    postApiStorageDoc,
+    updateApiStorage
+} from "./API_FUNC.js";
 
 
 export const useUsersMe = () => {
@@ -85,44 +91,45 @@ export const useRemainsList = () => {
 
 export const useStorageUpdate = (newStorageData, obj) => {
     const queryClient = useQueryClient()
-    const userLogined = useLogin(state => state.logined)
     return useMutation({
         mutationFn: () => updateApiStorage(newStorageData, obj),
         onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'storages']}),
         onError: (error) => console.log(error),
-        enabled: userLogined,
     })
 }
 
 export const useAddStorage = (storageData) => {
     const queryClient = useQueryClient()
-    const userLogined = useLogin(state => state.logined)
     return useMutation({
         mutationFn: () => postApiAddStorage(storageData),
         onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'storages']}),
         onError: (error) => console.log(error),
-        enabled: userLogined,
     })
 }
 
 export const useDeleteStorage = (obj) => {
-    const userLogined = useLogin(state => state.logined)
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: () => deleteApiStorage(obj),
         onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'storages']}),
         onError: (error) => console.log(error),
-        enabled: userLogined,
     })
 }
 
 export const useCreateStorageDoc = (newStorageDoc) => {
-    const userLogined = useLogin(state => state.logined)
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: () => postApiStorageDoc(newStorageDoc),
         onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'doc']}),
         onError: (error) => console.log(error),
-        enabled: userLogined,
+    })
+}
+
+export const useDeleteStorageDoc = (obj) => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: () => deleteApiStorageDoc(obj),
+        onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'doc']}),
+        onError: (error) => console.log(error),
     })
 }

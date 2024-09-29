@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -12,67 +12,89 @@ import Box from '@mui/material/Box'
 
 import {
     useClientsList,
-    useCreateStorageDoc,
+    useDeleteStorageDoc,
     useStorageDocList,
     useStorageList,
     useUsersMe
 } from "../../../../API/API_HOOKS.js";
 import MenuItem from "@mui/material/MenuItem";
+import CreateDocTable from "./CreateDocTable";
 
 
-export default function AddItem() {
+export default function CreateStorageDoc() {
 
     const {data: storageList} = useStorageList()
     const {data: storageDocList} = useStorageDocList()
     const {data: clientsList} = useClientsList()
     const {data: user} = useUsersMe()
-    const [open, setOpen] = React.useState(false)
+    const [lastStorageDoc, setLastStorageDoc] = useState()
+    const [open, setOpen] = useState(false)
     const [inputValue, setInputValue] = useState('')
     const [value, setValue] = useState(null)
+    const lastDoc = storageDocList[storageDocList.length - 1]
     const [newStorageDoc, setNewStorageDoc] = useState({
         client: '',
         storage: '',
         user: user.username,
-        type: 'IN',
+        type: 'coming',
         description: '',
 
     })
-
-    const createStorageDoc = useCreateStorageDoc(newStorageDoc)
+    const deleteStorageDoc = useDeleteStorageDoc(lastStorageDoc)
     const handleClickOpen = () => setOpen(true)
-    const handleClickClose = () => setOpen(false)
-    const handleChangeStorage = (event) => setNewStorageDoc({...newStorageDoc, storage: event.target.value})
-    const handleClickAdd = (e) => {
-        e.preventDefault()
-        createStorageDoc.mutate()
+    const handleClickClose = (event, reason) => {
+        const lastDoc = storageDocList[storageDocList.length - 1]
+        if (lastDoc.status === 'open') {
+            setLastStorageDoc(lastDoc)
+            deleteStorageDoc.mutate()
+        }
+        if (reason && reason === "backdropClick")
+            return
         setOpen(false)
+    }
+    const handleChangeStorage = (event) => {
+        setNewStorageDoc({...newStorageDoc, storage: event.target.value})
     }
     const handleChangeClients = (event, newValue) => {
         setValue(newValue)
         setNewStorageDoc({...newStorageDoc, client: newValue.name})
     }
+    const handleClickAdd = (e) => {
+        e.preventDefault()
+        setOpen(false)
+    }
 
-    console.log(newStorageDoc)
-    // console.log(clientsList)
-    // console.log(inputValue)
-    // console.log(value)
+    useEffect(() => {
+        if (user.username === lastDoc.user) {
+            if (lastDoc.status === 'open') {
+                setLastStorageDoc(lastDoc)
+                deleteStorageDoc.mutate()
+            }
+        }
+    }, [lastStorageDoc])
 
     return (
-        <React.Fragment>
+        <>
             <Button variant="text" color='inherit' onClick={handleClickOpen}>
                 AddItem
             </Button>
             <Dialog
                 open={open}
                 onClose={handleClickClose}
-                maxWidth='md'
+                maxWidth='xl'
                 fullWidth={true}
             >
                 <DialogTitle>Income</DialogTitle>
                 <DialogContent>
                     <DialogContentText/>
-                    <Box sx={{maxWidth: '29ch'}}>
-                        <FormControl margin='dense' fullWidth>
+                    <Box
+                        marginBottom={2}
+                        component="form"
+                        sx={{'& > :not(style)': {m: 1, width: 400},}}
+                        noValidate
+                        autoComplete="off"
+                    >
+                        <FormControl required={true}>
                             <InputLabel id="demo-simple-select-label">Storage</InputLabel>
                             <Select
                                 labelId="StorageSelectLabel"
@@ -80,11 +102,17 @@ export default function AddItem() {
                                 value={newStorageDoc.storage}
                                 label="Storage"
                                 onChange={handleChangeStorage}
-                            >{storageList.map((obj, index)=>{
+                            >{storageList.map((obj, index) => {
                                 return <MenuItem key={index} value={obj.name}>{obj.name}</MenuItem>
                             })}
                             </Select>
                         </FormControl>
+                        {/*<TextField*/}
+                        {/*    margin='dense'*/}
+                        {/*    id='note'*/}
+                        {/*    label='Description'*/}
+                        {/*    onChange={e => setNewStorageDoc({...newStorageDoc, description: e.target.value})}*/}
+                        {/*/>*/}
                         <Autocomplete
                             value={value}
                             onChange={handleChangeClients}
@@ -92,39 +120,27 @@ export default function AddItem() {
                             onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
                             id="ClientSelect"
                             options={clientsList}
-                            autoHighlight
-                            sx={{ width: 300 }}
-                            getOptionLabel={options=>options.name}
+                            sx={{width: 300}}
+                            getOptionLabel={options => options.name}
                             renderOption={(props, option) => {
-                                const { key, ...optionProps } = props
+                                const {key, ...optionProps} = props
                                 return (
                                     <Box key={key} component="li" {...optionProps}>
                                         {option.name}
                                     </Box>
                                 )
                             }}
-                            renderInput={(params) => <TextField {...params} label="Client" />}
+                            renderInput={(params) => <TextField required={true} margin='dense' {...params}
+                                                                label="Supplier"/>}
                         />
-                        <TextField
-                            margin='dense'
-                            id='note'
-                            label='Description'
-                            onChange={e => setNewStorageDoc({...newStorageDoc, description: e.target.value})}/>
                     </Box>
-
-
-                    <Box
-                        component="form"
-                        sx={{'& > :not(style)': {m: 1, width: '29ch'},}}
-                        noValidate
-                        autoComplete="off"
-                    ></Box>
+                    <CreateDocTable newStorageDoc={newStorageDoc}/>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClickClose}>Cancel</Button>
-                    <Button onClick={handleClickAdd}>Add</Button>
+                    <Button onClick={handleClickAdd}>OK</Button>
                 </DialogActions>
             </Dialog>
-        </React.Fragment>
+        </>
     )
 }

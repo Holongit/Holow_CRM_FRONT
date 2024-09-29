@@ -9,7 +9,7 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import SplitButton from './SplitButton/SplitButton.jsx'
 import AddStorage from './AddStorage/AddStorage'
 import ButtonConfig from './Config/ButtonConfig';
-import AddItem from './AddItem/AddItem';
+import CreateStorageDoc from './AddItem/CreateStorageDoc.jsx';
 
 
 const Search = styled('div')(({theme}) => ({
@@ -85,7 +85,7 @@ export default function AppHeader({storageList, onSearch, storageDocList, client
             <Divider variant="middle"/>
             <Toolbar>
                 <Stack sx={{flexGrow: 1}} direction="row" spacing={2}>
-                    <AddItem />
+                    <CreateStorageDoc />
                     <Button variant="text" color="inherit">out</Button>
                     <Button variant="text" color="inherit">transport</Button>
                 </Stack>
