@@ -18,27 +18,19 @@ const rows = [
     createData('Gingerbread', 356, 16.0, 49, 3.9),
 ];
 
-export default function CreateDocTable({newStorageDoc}) {
+export default function CreateDocTable({enableSelectProduct}) {
     const {data: clientsList} = useClientsList()
     const [inputValue, setInputValue] = useState('')
     const [currentDocId, setCurrentDocId] = useState(null)
     const [value, setValue] = useState(null)
-    const createStorageDoc = useCreateStorageDoc(newStorageDoc)
-
     const handleChangeProduct = async (event, newValue) => {
-        if (newStorageDoc.storage !== '' && newStorageDoc.clients !== '' && !currentDocId) {
-            await createStorageDoc.mutate()
-            const response = await createStorageDoc.data
-            setCurrentDocId(response.data.id)
-        }
         setValue(newValue)
     }
-
-    console.log(currentDocId)
 
     return (
         <>
             <Autocomplete
+                disabled={enableSelectProduct}
                 value={value}
                 onChange={handleChangeProduct}
                 inputValue={inputValue}
@@ -50,12 +42,21 @@ export default function CreateDocTable({newStorageDoc}) {
                 renderOption={(props, option) => {
                     const {key, ...optionProps} = props
                     return (
-                        <Box key={key} component="li" {...optionProps}>
+                        <Box
+                            key={key} component="li"
+                            {...optionProps}>
                             {option.name}
                         </Box>
                     )
                 }}
-                renderInput={(params) => <TextField sx={{marginTop: 0}} {...params} label="Add Product"/>}
+                renderInput={(params) =>
+                    <TextField
+                        disabled={enableSelectProduct}
+                        sx={{marginTop: 0}}
+                        {...params}
+                        label="Add Product"
+                    />
+                }
             />
             <TableContainer component={Paper}>
                 <Table sx={{minWidth: 650}} aria-label="simple table">
