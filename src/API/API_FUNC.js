@@ -29,6 +29,10 @@ export async function postApiStorageDoc(data) {
 }
 
 export async function deleteApiStorageDoc(obj) {
-    const id = obj.id + '/'
-    return await API_STORAGE.delete('doc/' + id)
+    if (typeof obj === 'object') {
+        const id = obj.id + '/'
+        return await API_STORAGE.delete('doc/' + id)
+    } else {
+        return await API_STORAGE.delete('doc/' + obj + '/')
+    }
 }

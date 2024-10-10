@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {useEffect, useState} from 'react'
+import {useState} from 'react'
 
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -7,7 +7,7 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
-import {Autocomplete, FormControl, InputLabel, Select, TextField} from '@mui/material'
+import {Autocomplete, FormControl, InputLabel, Select, Stack, TextField} from '@mui/material'
 import Box from '@mui/material/Box'
 
 import {
@@ -19,6 +19,7 @@ import {
 } from "../../../../API/API_HOOKS.js";
 import MenuItem from "@mui/material/MenuItem";
 import CreateDocTable from "./CreateDocTable";
+import DeleteIcon from "@mui/icons-material/Delete.js";
 
 
 export default function CreateStorageDoc({storage}) {
@@ -26,10 +27,9 @@ export default function CreateStorageDoc({storage}) {
     const {data: storageDocList} = useStorageDocList()
     const {data: clientsList} = useClientsList()
     const {data: user} = useUsersMe()
-    const [openDoc, setOpenDoc] = useState({})
     const [open, setOpen] = useState(false)
     const [inputClientValue, setInputClientValue] = useState('')
-    const [currentStorageDoc, setCurrentStorageDoc] = useState()
+    const [currentStorageDoc, setCurrentStorageDoc] = useState('')
     const [newStorageDoc, setNewStorageDoc] = useState({
         client: '',
         storage: '',
@@ -38,19 +38,17 @@ export default function CreateStorageDoc({storage}) {
         description: '',
 
     })
-    const openDocList = storageDocList
-        ? storageDocList.filter((doc) => doc.status === 'open' && doc.user === user.username)
-        : []
+    const openDocList = storageDocList.filter((doc) => doc.status === 'open' && doc.user === user.username)
+    const [openDoc, setOpenDoc] = useState('')
     const createStorageDoc = useCreateStorageDoc(newStorageDoc)
     const deleteStorageDoc = useDeleteStorageDoc(currentStorageDoc)
-
-    const handleClickOpen = async () => {
+    const handleClickOpen = () => {
         if (storage) {
             setNewStorageDoc({...newStorageDoc, client: clientsList[0].name, storage: storage})
         } else {
             setNewStorageDoc({...newStorageDoc, client: clientsList[0].name, storage: storageList[0].name})
         }
-        await createStorageDoc.mutate()
+        createStorageDoc.mutate()
         setOpen(true)
     }
     const handleClickClose = async (event, reason) => {
@@ -62,6 +60,7 @@ export default function CreateStorageDoc({storage}) {
         }
         if (reason && reason === "backdropClick")
             return
+        setOpenDoc('')
         setOpen(false)
     }
     const handleChangeStorage = (event) => {
@@ -82,12 +81,22 @@ export default function CreateStorageDoc({storage}) {
         setOpen(false)
     }
 
+    const handleClickDeleteInvoice = async (e) => {
+        e.preventDefault()
+        const confirm = window.confirm(`Delete Invoice ${openDoc} ?`)
+        if (openDoc.length !== 0 && confirm) {
+            setCurrentStorageDoc(openDoc)
+            deleteStorageDoc.mutate()
+            setOpenDoc('')
+        }
+    }
 
-    // console.log('openDocList: ', openDocList)
-    // console.log('storageDocList: ', storageDocList)
-    // console.log('openDoc: ', openDoc)
+
+    console.log('openDocList: ', openDocList)
+    console.log('storageDocList: ', storageDocList)
+    console.log('openDoc: ', openDoc)
     // console.log('storage: ', storage)
-    console.log('newStorageDoc: ', newStorageDoc)
+    // console.log('newStorageDoc: ', newStorageDoc)
     // console.log('clientsList: ', clientsList)
     // console.log('currentStorageDocID: ', currentStorageDocID)
 
@@ -122,11 +131,11 @@ export default function CreateStorageDoc({storage}) {
                         noValidate
                         autoComplete="off"
                     >
-                        <FormControl required={true}>
+                        <FormControl>
                             <InputLabel
                                 id="OpenInvoiceInputId"
                             >
-                                Open Invoice
+                                Invoice
                             </InputLabel>
                             <Select
                                 disabled={openDocList.length === 0}
@@ -135,17 +144,26 @@ export default function CreateStorageDoc({storage}) {
                                 value={openDoc}
                                 label="Storage"
                                 onChange={handleChangeOpenInvoice}
-                            >{storageDocList && storageDocList
-                                .filter((doc) => doc.status === 'open')
+                            >{openDocList && openDocList
                                 .map((obj, index) => {
-                                    return <MenuItem key={index} value={openDocList[index]}
+                                    return <MenuItem key={index} value={obj.id}
                                                      disabled={openDocList.length === 0}>
                                         #{obj.id} {obj.storage} - {obj.user}
                                     </MenuItem>
                                 })}
                             </Select>
+                            <Stack direction="row" spacing={2} mt='10px'>
+                                <Button variant="outlined"
+                                        onClick={handleClickDeleteInvoice}
+                                        startIcon={<DeleteIcon/>}
+                                        color='error'
+                                        disabled={openDoc.length === 0}
+                                >
+                                    Delete
+                                </Button>
+                            </Stack>
                         </FormControl>
-                        <FormControl required={true}>
+                        <FormControl>
                             <InputLabel id="StorageSelectInputId">Storage</InputLabel>
                             <Select
                                 labelId="StorageSelectLabelId"
@@ -153,7 +171,7 @@ export default function CreateStorageDoc({storage}) {
                                 value={newStorageDoc.storage}
                                 label="Storage"
                                 onChange={handleChangeStorage}
-                            >{storageList.map((obj, index) => {
+                            >{storageList && storageList.map((obj, index) => {
                                 return <MenuItem key={index} value={obj.name}>{obj.name}</MenuItem>
                             })}
                             </Select>
@@ -171,7 +189,7 @@ export default function CreateStorageDoc({storage}) {
                             inputValue={inputClientValue}
                             onInputChange={(event, newInputValue) => setInputClientValue(newInputValue)}
                             id="ClientSelect"
-                            options={clientsList.map(option => option.name)}
+                            options={clientsList && clientsList.map(option => option.name)}
                             sx={{width: 300}}
                             renderOption={(props, option) => {
                                 const {key, ...optionProps} = props
@@ -182,9 +200,9 @@ export default function CreateStorageDoc({storage}) {
                                 )
                             }}
                             renderInput={(params) =>
-                                <TextField required={true}
-                                           margin='dense' {...params}
-                                           label="Supplier"
+                                <TextField
+                                    margin='dense' {...params}
+                                    label="Supplier"
                                 />
                             }
                         />

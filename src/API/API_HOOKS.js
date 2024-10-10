@@ -45,6 +45,7 @@ export const useStorageList = () => {
             return response.data.results
         },
         queryKey: ['storage', 'storages'],
+        initialData: [],
         retry: 0,
         enabled: userLogined,
     })
@@ -59,6 +60,7 @@ export const useStorageDocList = () => {
         },
         queryKey: ['storage', 'doc'],
         retry: 0,
+        initialData: [],
         enabled: userLogined,
     })
 }
