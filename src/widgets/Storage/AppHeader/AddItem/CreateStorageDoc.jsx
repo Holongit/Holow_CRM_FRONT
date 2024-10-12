@@ -11,7 +11,7 @@ import {Autocomplete, FormControl, InputLabel, Select, Stack, TextField} from '@
 import Box from '@mui/material/Box'
 
 import {
-    useClientsList, useCreateStorageDoc,
+    useClientsList,
     useDeleteStorageDoc,
     useStorageDocList,
     useStorageList,
@@ -20,44 +20,70 @@ import {
 import MenuItem from "@mui/material/MenuItem";
 import CreateDocTable from "./CreateDocTable";
 import DeleteIcon from "@mui/icons-material/Delete.js";
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import {useMutation, useQueryClient} from "@tanstack/react-query";
+import {postApiStorageDoc} from "../../../../API/API_FUNC.js";
 
 
 export default function CreateStorageDoc({storage}) {
+
     const {data: storageList} = useStorageList()
     const {data: storageDocList} = useStorageDocList()
     const {data: clientsList} = useClientsList()
     const {data: user} = useUsersMe()
+    const queryClient = useQueryClient()
     const [open, setOpen] = useState(false)
     const [inputClientValue, setInputClientValue] = useState('')
+    const openDocList = storageDocList.filter((doc) => doc.status === 'open' && doc.user === user.username)
     const [currentStorageDoc, setCurrentStorageDoc] = useState('')
+    const [openDoc, setOpenDoc] = useState('')
     const [newStorageDoc, setNewStorageDoc] = useState({
         client: '',
         storage: '',
         user: user.username,
         type: 'coming',
         description: '',
-
     })
-    const openDocList = storageDocList.filter((doc) => doc.status === 'open' && doc.user === user.username)
-    const [openDoc, setOpenDoc] = useState('')
-    const createStorageDoc = useCreateStorageDoc(newStorageDoc)
-    const deleteStorageDoc = useDeleteStorageDoc(currentStorageDoc)
+    const deleteSelectedInvoice = useDeleteStorageDoc(openDoc)
+    const createStorageDoc = useMutation({
+        mutationFn: async () => {
+            const response = await postApiStorageDoc(newStorageDoc)
+            console.log('mutationFn', response)
+            setCurrentStorageDoc(response.data)
+            setOpenDoc(response.data)
+        },
+        onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'doc']}),
+        onError: (error) => {
+            console.log(error)
+            setCurrentStorageDoc([])
+            setOpenDoc('')
+        },
+    })
+
     const handleClickOpen = () => {
-        if (storage) {
-            setNewStorageDoc({...newStorageDoc, client: clientsList[0].name, storage: storage})
-        } else {
-            setNewStorageDoc({...newStorageDoc, client: clientsList[0].name, storage: storageList[0].name})
+        if (openDocList.length === 0) {
+            if (storage) {
+                setNewStorageDoc({...newStorageDoc, client: clientsList[0].name, storage: storage})
+            }
+            if (!storage) {
+                setNewStorageDoc({...newStorageDoc, client: clientsList[0].name, storage: storageList[0].name})
+            }
+            createStorageDoc.mutate()
         }
-        createStorageDoc.mutate()
+        if (openDocList.length !== 0) {
+            const lastOpenDoc = openDocList[openDocList.length - 1]
+            setNewStorageDoc({
+                ...newStorageDoc,
+                client: lastOpenDoc.client,
+                storage: lastOpenDoc.storage,
+                description: lastOpenDoc.description,
+            })
+            setCurrentStorageDoc(lastOpenDoc)
+            setOpenDoc(lastOpenDoc)
+        }
         setOpen(true)
     }
-    const handleClickClose = async (event, reason) => {
-        const response = await createStorageDoc.data
-        const currentStorageDoc = response.data
-        setCurrentStorageDoc(currentStorageDoc)
-        if (currentStorageDoc.status === 'open') {
-            deleteStorageDoc.mutate()
-        }
+    const handleClickClose = (event, reason) => {
         if (reason && reason === "backdropClick")
             return
         setOpenDoc('')
@@ -69,10 +95,9 @@ export default function CreateStorageDoc({storage}) {
     }
     const handleChangeOpenInvoice = (event) => {
         setOpenDoc(event.target.value)
-
+        setNewStorageDoc(event.target.value)
     }
     const handleChangeClients = (event, newValue) => {
-        console.log(newValue)
         setNewStorageDoc({...newStorageDoc, client: newValue})
 
     }
@@ -80,36 +105,29 @@ export default function CreateStorageDoc({storage}) {
         e.preventDefault()
         setOpen(false)
     }
-
     const handleClickDeleteInvoice = async (e) => {
         e.preventDefault()
-        const confirm = window.confirm(`Delete Invoice ${openDoc} ?`)
+        const confirm = window.confirm(`Delete Invoice ${openDoc.id} ?`)
         if (openDoc.length !== 0 && confirm) {
-            setCurrentStorageDoc(openDoc)
-            deleteStorageDoc.mutate()
+            await deleteSelectedInvoice.mutate()
+            setNewStorageDoc({...newStorageDoc, description: '', storage: '', client: ''})
             setOpenDoc('')
+            setCurrentStorageDoc('')
         }
     }
-
-
-    console.log('openDocList: ', openDocList)
-    console.log('storageDocList: ', storageDocList)
+    const handleClickCreateInvoice = (e) => {
+        e.preventDefault()
+        if (newStorageDoc.storage.length > 0 && newStorageDoc.client !== null && newStorageDoc.client.length > 0) {
+            createStorageDoc.mutate()
+        } else { alert('Select storage and clients')}
+    }
+    // console.log('openDocList: ', openDocList)
+    // console.log('storageDocList: ', storageDocList)
     console.log('openDoc: ', openDoc)
-    // console.log('storage: ', storage)
+    console.log('currentStorageDoc: ', currentStorageDoc)
     // console.log('newStorageDoc: ', newStorageDoc)
     // console.log('clientsList: ', clientsList)
     // console.log('currentStorageDocID: ', currentStorageDocID)
-
-
-    // useEffect(() => {
-    //     if (user.username === lastDoc.user) {
-    //         if (lastDoc.status === 'open') {
-    //             setLastStorageDoc(lastDoc)
-    //             deleteStorageDoc.mutate()
-    //         }
-    //     }
-    // }, [lastStorageDoc])
-
     return (
         <>
             <Button variant="text" color='inherit' onClick={handleClickOpen}>
@@ -141,16 +159,16 @@ export default function CreateStorageDoc({storage}) {
                                 disabled={openDocList.length === 0}
                                 labelId="OpenInvoiceLabelId"
                                 id="OpenInvoiceId"
-                                value={openDoc}
+                                value={openDoc || ''}
                                 label="Storage"
                                 onChange={handleChangeOpenInvoice}
                             >{openDocList && openDocList
-                                .map((obj, index) => {
-                                    return <MenuItem key={index} value={obj.id}
-                                                     disabled={openDocList.length === 0}>
+                                .map((obj, index) => (
+                                    <MenuItem key={index} value={obj}
+                                              disabled={openDocList.length === 0}>
                                         #{obj.id} {obj.storage} - {obj.user}
                                     </MenuItem>
-                                })}
+                                ))}
                             </Select>
                             <Stack direction="row" spacing={2} mt='10px'>
                                 <Button variant="outlined"
@@ -160,6 +178,13 @@ export default function CreateStorageDoc({storage}) {
                                         disabled={openDoc.length === 0}
                                 >
                                     Delete
+                                </Button>
+                                <Button variant="outlined"
+                                        onClick={handleClickCreateInvoice}
+                                        startIcon={<NoteAddIcon/>}
+                                        color='info'
+                                >
+                                    Create
                                 </Button>
                             </Stack>
                         </FormControl>
@@ -176,17 +201,17 @@ export default function CreateStorageDoc({storage}) {
                             })}
                             </Select>
                         </FormControl>
-
-                        {/*<TextField*/}
-                        {/*    margin='dense'*/}
-                        {/*    id='note'*/}
-                        {/*    label='Description'*/}
-                        {/*    onChange={e => setNewStorageDoc({...newStorageDoc, description: e.target.value})}*/}
-                        {/*/>*/}
+                        <TextField
+                            margin='dense'
+                            id='note'
+                            label='Description'
+                            value={newStorageDoc.description}
+                            onChange={e => setNewStorageDoc({...newStorageDoc, description: e.target.value})}
+                        />
                         <Autocomplete
                             value={newStorageDoc.client}
                             onChange={handleChangeClients}
-                            inputValue={inputClientValue}
+                            inputValue={inputClientValue || ''}
                             onInputChange={(event, newInputValue) => setInputClientValue(newInputValue)}
                             id="ClientSelect"
                             options={clientsList && clientsList.map(option => option.name)}
