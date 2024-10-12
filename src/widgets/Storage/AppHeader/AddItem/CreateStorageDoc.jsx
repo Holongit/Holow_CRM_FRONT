@@ -35,7 +35,6 @@ export default function CreateStorageDoc({storage}) {
     const [open, setOpen] = useState(false)
     const [inputClientValue, setInputClientValue] = useState('')
     const openDocList = storageDocList.filter((doc) => doc.status === 'open' && doc.user === user.username)
-    const [currentStorageDoc, setCurrentStorageDoc] = useState('')
     const [openDoc, setOpenDoc] = useState('')
     const [newStorageDoc, setNewStorageDoc] = useState({
         client: '',
@@ -48,14 +47,11 @@ export default function CreateStorageDoc({storage}) {
     const createStorageDoc = useMutation({
         mutationFn: async () => {
             const response = await postApiStorageDoc(newStorageDoc)
-            console.log('mutationFn', response)
-            setCurrentStorageDoc(response.data)
             setOpenDoc(response.data)
         },
         onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'doc']}),
         onError: (error) => {
             console.log(error)
-            setCurrentStorageDoc([])
             setOpenDoc('')
         },
     })
@@ -78,7 +74,6 @@ export default function CreateStorageDoc({storage}) {
                 storage: lastOpenDoc.storage,
                 description: lastOpenDoc.description,
             })
-            setCurrentStorageDoc(lastOpenDoc)
             setOpenDoc(lastOpenDoc)
         }
         setOpen(true)
@@ -94,8 +89,9 @@ export default function CreateStorageDoc({storage}) {
 
     }
     const handleChangeOpenInvoice = (event) => {
-        setOpenDoc(event.target.value)
-        setNewStorageDoc(event.target.value)
+        const selectedStorageDoc = openDocList.filter(obj => obj.id === event.target.value)
+        setNewStorageDoc(selectedStorageDoc[0])
+        setOpenDoc(selectedStorageDoc[0])
     }
     const handleChangeClients = (event, newValue) => {
         setNewStorageDoc({...newStorageDoc, client: newValue})
@@ -112,22 +108,25 @@ export default function CreateStorageDoc({storage}) {
             await deleteSelectedInvoice.mutate()
             setNewStorageDoc({...newStorageDoc, description: '', storage: '', client: ''})
             setOpenDoc('')
-            setCurrentStorageDoc('')
         }
     }
     const handleClickCreateInvoice = (e) => {
         e.preventDefault()
         if (newStorageDoc.storage.length > 0 && newStorageDoc.client !== null && newStorageDoc.client.length > 0) {
             createStorageDoc.mutate()
-        } else { alert('Select storage and clients')}
+        } else {
+            alert('Select storage and clients')
+        }
     }
+
     // console.log('openDocList: ', openDocList)
     // console.log('storageDocList: ', storageDocList)
-    console.log('openDoc: ', openDoc)
-    console.log('currentStorageDoc: ', currentStorageDoc)
+    // console.log('openDoc: ', openDoc)
+    // console.log('currentStorageDoc: ', currentStorageDoc)
     // console.log('newStorageDoc: ', newStorageDoc)
     // console.log('clientsList: ', clientsList)
     // console.log('currentStorageDocID: ', currentStorageDocID)
+
     return (
         <>
             <Button variant="text" color='inherit' onClick={handleClickOpen}>
@@ -159,12 +158,12 @@ export default function CreateStorageDoc({storage}) {
                                 disabled={openDocList.length === 0}
                                 labelId="OpenInvoiceLabelId"
                                 id="OpenInvoiceId"
-                                value={openDoc || ''}
+                                value={openDoc.id || ''}
                                 label="Storage"
                                 onChange={handleChangeOpenInvoice}
                             >{openDocList && openDocList
                                 .map((obj, index) => (
-                                    <MenuItem key={index} value={obj}
+                                    <MenuItem key={index} value={obj.id}
                                               disabled={openDocList.length === 0}>
                                         #{obj.id} {obj.storage} - {obj.user}
                                     </MenuItem>
