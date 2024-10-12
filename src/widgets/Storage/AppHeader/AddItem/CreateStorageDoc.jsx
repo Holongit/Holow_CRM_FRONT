@@ -118,7 +118,6 @@ export default function CreateStorageDoc({storage}) {
             alert('Select storage and clients')
         }
     }
-
     // console.log('openDocList: ', openDocList)
     // console.log('storageDocList: ', storageDocList)
     // console.log('openDoc: ', openDoc)
@@ -126,7 +125,6 @@ export default function CreateStorageDoc({storage}) {
     // console.log('newStorageDoc: ', newStorageDoc)
     // console.log('clientsList: ', clientsList)
     // console.log('currentStorageDocID: ', currentStorageDocID)
-
     return (
         <>
             <Button variant="text" color='inherit' onClick={handleClickOpen}>
@@ -144,7 +142,7 @@ export default function CreateStorageDoc({storage}) {
                     <Box
                         marginBottom={2}
                         component="form"
-                        sx={{'& > :not(style)': {m: 1, width: 400},}}
+                        sx={{'& > :not(style)': {m: 1, minWidth: 450},}}
                         noValidate
                         autoComplete="off"
                     >
@@ -158,6 +156,7 @@ export default function CreateStorageDoc({storage}) {
                                 disabled={openDocList.length === 0}
                                 labelId="OpenInvoiceLabelId"
                                 id="OpenInvoiceId"
+
                                 value={openDoc.id || ''}
                                 label="Storage"
                                 onChange={handleChangeOpenInvoice}
@@ -231,7 +230,7 @@ export default function CreateStorageDoc({storage}) {
                             }
                         />
                     </Box>
-                    <CreateDocTable/>
+                    <CreateDocTable openDoc={openDoc}/>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClickClose}>Cancel</Button>

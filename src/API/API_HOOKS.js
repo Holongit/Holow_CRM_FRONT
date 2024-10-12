@@ -6,7 +6,7 @@ import {
     deleteApiStorage,
     deleteApiStorageDoc,
     postApiAddStorage,
-    postApiStorageDoc,
+    postApiStorageDoc, postApiStorageDocTable,
     updateApiStorage
 } from "./API_FUNC.js";
 
@@ -59,6 +59,20 @@ export const useStorageDocList = () => {
             return response.data.results
         },
         queryKey: ['storage', 'doc'],
+        retry: 0,
+        initialData: [],
+        enabled: userLogined,
+    })
+}
+
+export const useStorageDocTableList = () => {
+    const userLogined = useLogin(state => state.logined)
+    return useQuery({
+        queryFn: async () => {
+            const response = await API_STORAGE.get('doctable/')
+            return response.data.results
+        },
+        queryKey: ['storage', 'doctable'],
         retry: 0,
         initialData: [],
         enabled: userLogined,
@@ -132,6 +146,15 @@ export const useDeleteStorageDoc = (obj) => {
     return useMutation({
         mutationFn: () => deleteApiStorageDoc(obj),
         onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'doc']}),
+        onError: (error) => console.log(error),
+    })
+}
+
+export const useCreateStorageDocTable = (newStorageDocTable) => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: () => postApiStorageDocTable(newStorageDocTable),
+        onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'doctable']}),
         onError: (error) => console.log(error),
     })
 }

@@ -36,3 +36,7 @@ export async function deleteApiStorageDoc(obj) {
         return await API_STORAGE.delete('doc/' + obj + '/')
     }
 }
+
+export async function postApiStorageDocTable(data) {
+    return await API_STORAGE.post('doctable/', data)
+}
