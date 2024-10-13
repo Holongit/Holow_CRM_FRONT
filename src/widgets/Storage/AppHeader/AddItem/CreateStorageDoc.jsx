@@ -17,7 +17,7 @@ import NoteAddIcon from '@mui/icons-material/NoteAdd';
 
 import {
     useClientsList, useCreateStorageClients, useDeleteStorageClients,
-    useDeleteStorageDoc,
+    useDeleteStorageDoc, usePatchStorageDoc,
     useStorageDocList,
     useStorageList,
     useUsersMe
@@ -54,6 +54,7 @@ export default function CreateStorageDoc({storage}) {
         address: '',
     })
     const deleteSelectedInvoice = useDeleteStorageDoc(openDoc)
+    const patchCloseStorageDoc = usePatchStorageDoc({status: 'close'}, openDoc)
     const createStorageDoc = useMutation({
         mutationFn: async () => {
             const response = await postApiStorageDoc(newStorageDoc)
@@ -107,8 +108,10 @@ export default function CreateStorageDoc({storage}) {
         setNewStorageDoc({...newStorageDoc, client: newValue})
 
     }
-    const handleClickAdd = (e) => {
+    const handleClickAdd = async (e) => {
         e.preventDefault()
+        await patchCloseStorageDoc.mutate()
+        setOpenDoc('')
         setOpen(false)
     }
     const handleClickDeleteInvoice = async (e) => {
@@ -147,9 +150,9 @@ export default function CreateStorageDoc({storage}) {
     }, [])
     // console.log('openDocList: ', openDocList)
     // console.log('storageDocList: ', storageDocList)
-    // console.log('openDoc: ', openDoc)
+    console.log('openDoc: ', openDoc)
     // console.log('currentStorageDoc: ', currentStorageDoc)
-    // console.log('newStorageDoc: ', newStorageDoc)
+    console.log('newStorageDoc: ', newStorageDoc)
     // console.log('clientsList: ', clientsList)
     // console.log('currentStorageDocID: ', currentStorageDocID)
     return (

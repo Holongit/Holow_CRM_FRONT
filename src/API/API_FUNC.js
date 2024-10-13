@@ -37,6 +37,15 @@ export async function deleteApiStorageDoc(obj) {
     }
 }
 
+export async function patchApiStorageDoc(data, obj) {
+    if (typeof obj === 'object') {
+        const id = obj.id + '/'
+        return await API_STORAGE.patch('doc/' + id, data)
+    } else {
+        return await API_STORAGE.patch('doc/' + obj + '/', data)
+    }
+}
+
 export async function postApiStorageDocTable(data) {
     return await API_STORAGE.post('doctable/', data)
 }
