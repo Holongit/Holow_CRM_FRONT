@@ -3,9 +3,9 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {useLogin} from '../pages/login/loginStore.js';
 import {API_STORAGE, API_USERS_ME} from './API_URLS.js';
 import {
-    deleteApiStorage,
+    deleteApiStorage, deleteApiStorageClients,
     deleteApiStorageDoc, deleteApiStorageDocTable,
-    postApiAddStorage,
+    postApiAddStorage, postApiStorageClients,
     postApiStorageDoc, postApiStorageDocTable,
     updateApiStorage
 } from "./API_FUNC.js";
@@ -164,6 +164,24 @@ export const useDeleteStorageDocTable = (obj) => {
     return useMutation({
         mutationFn: () => deleteApiStorageDocTable(obj),
         onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'doctable']}),
+        onError: (error) => console.log(error),
+    })
+}
+
+export const useCreateStorageClients = (newClientData) => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: () => postApiStorageClients(newClientData),
+        onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'clients']}),
+        onError: (error) => console.log(error),
+    })
+}
+
+export const useDeleteStorageClients = (obj) => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: () => deleteApiStorageClients(obj),
+        onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'clients']}),
         onError: (error) => console.log(error),
     })
 }

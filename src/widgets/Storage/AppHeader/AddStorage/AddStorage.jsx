@@ -25,8 +25,10 @@ export default function AddStorage() {
     const handleClickClose = () => setOpen(false)
     const handleClickAdd = (e) => {
         e.preventDefault()
-        addStorage.mutate()
-        setOpen(false)
+        if (setStorageData.name.length > 2) {
+            addStorage.mutate()
+            setOpen(false)
+        }
     }
 
     return (
@@ -50,6 +52,7 @@ export default function AddStorage() {
                         autoComplete="off"
                     >
                         <TextField
+                            required
                             margin='dense'
                             id='name'
                             label='Name'
@@ -63,6 +66,7 @@ export default function AddStorage() {
                             margin='dense'
                             id='note'
                             label='Description'
+                            multiline
                             onChange={e=>setStorageData({...storageData, description: e.target.value})}/>
                     </Box>
                 </DialogContent>

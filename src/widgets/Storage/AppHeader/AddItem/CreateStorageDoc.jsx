@@ -1,5 +1,7 @@
 import * as React from 'react'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
+
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -9,20 +11,20 @@ import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import {Autocomplete, FormControl, InputLabel, Select, Stack, TextField} from '@mui/material'
 import Box from '@mui/material/Box'
+import MenuItem from "@mui/material/MenuItem";
+import DeleteIcon from "@mui/icons-material/Delete.js";
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
 
 import {
-    useClientsList,
+    useClientsList, useCreateStorageClients, useDeleteStorageClients,
     useDeleteStorageDoc,
     useStorageDocList,
     useStorageList,
     useUsersMe
 } from "../../../../API/API_HOOKS.js";
-import MenuItem from "@mui/material/MenuItem";
 import CreateDocTable from "./CreateDocTable";
-import DeleteIcon from "@mui/icons-material/Delete.js";
-import NoteAddIcon from '@mui/icons-material/NoteAdd';
-import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {postApiStorageDoc} from "../../../../API/API_FUNC.js";
+import CreateClient from "../CreateClient/CreateClient";
 
 
 export default function CreateStorageDoc({storage}) {
@@ -42,6 +44,14 @@ export default function CreateStorageDoc({storage}) {
         user: user.username,
         type: 'coming',
         description: '',
+    })
+    const deleteStorageClients = useDeleteStorageClients(clientsList.filter((client) => client.name === newStorageDoc.client)[0])
+    const deleteStorageDefaultClients = useDeleteStorageClients(clientsList.filter((client) => client.name === 'CRM')[0])
+    const createStorageDefaultClients = useCreateStorageClients({
+        name: 'CRM',
+        telephone: '',
+        email: '',
+        address: '',
     })
     const deleteSelectedInvoice = useDeleteStorageDoc(openDoc)
     const createStorageDoc = useMutation({
@@ -118,6 +128,23 @@ export default function CreateStorageDoc({storage}) {
             alert('Select storage and clients')
         }
     }
+    const handleClickDeleteClient = async (e) => {
+        e.preventDefault()
+        if (newStorageDoc.client.length > 0) {
+            await deleteStorageClients.mutate()
+            setNewStorageDoc({...newStorageDoc, client: ''})
+        }
+
+    }
+    useEffect(() => {
+        const CRM = clientsList.filter((client) => client.name === 'CRM')
+        if (clientsList.length === 0) {
+            createStorageDefaultClients.mutate()
+        }
+        if (clientsList.length >= 2 && CRM.length > 0) {
+            deleteStorageDefaultClients.mutate()
+        }
+    }, [])
     // console.log('openDocList: ', openDocList)
     // console.log('storageDocList: ', storageDocList)
     // console.log('openDoc: ', openDoc)
@@ -170,19 +197,19 @@ export default function CreateStorageDoc({storage}) {
                             </Select>
                             <Stack direction="row" spacing={2} mt='10px'>
                                 <Button variant="outlined"
+                                        onClick={handleClickCreateInvoice}
+                                        startIcon={<NoteAddIcon/>}
+                                        color='info'
+                                >
+                                    Create
+                                </Button>
+                                <Button variant="outlined"
                                         onClick={handleClickDeleteInvoice}
                                         startIcon={<DeleteIcon/>}
                                         color='error'
                                         disabled={openDoc.length === 0}
                                 >
                                     Delete
-                                </Button>
-                                <Button variant="outlined"
-                                        onClick={handleClickCreateInvoice}
-                                        startIcon={<NoteAddIcon/>}
-                                        color='info'
-                                >
-                                    Create
                                 </Button>
                             </Stack>
                         </FormControl>
@@ -229,6 +256,17 @@ export default function CreateStorageDoc({storage}) {
                                 />
                             }
                         />
+                        <Stack direction="row" spacing={2} mt='10px'>
+                            <CreateClient/>
+                            <Button variant="outlined"
+                                    onClick={handleClickDeleteClient}
+                                    startIcon={<DeleteIcon/>}
+                                    color='error'
+                                    disabled={clientsList.length === 1}
+                            >
+                                Delete
+                            </Button>
+                        </Stack>
                     </Box>
                     <CreateDocTable openDoc={openDoc}/>
                 </DialogContent>

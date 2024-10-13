@@ -1,4 +1,8 @@
+import * as React from "react";
+import {useState} from "react";
+
 import Paper from "@mui/material/Paper";
+import IconButton from "@mui/material/IconButton";
 import {
     Autocomplete,
     Stack,
@@ -12,19 +16,16 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete.js";
 import Box from "@mui/material/Box";
-import * as React from "react";
-import {useState} from "react";
+
 import {
-    useClientsList,
     useCreateStorageDocTable, useDeleteStorageDocTable,
     useGoodsList,
     useStorageDocTableList
 } from "../../../../API/API_HOOKS.js";
-import IconButton from "@mui/material/IconButton";
 
 
 export default function CreateDocTable({openDoc}) {
-    
+
     const {data: goodsList} = useGoodsList()
     const {data: docTableList} = useStorageDocTableList()
     const [inputProductValue, setInputProductValue] = useState('')
@@ -109,7 +110,7 @@ export default function CreateDocTable({openDoc}) {
                         <TableRow>
                             <TableCell>id</TableCell>
                             <TableCell align="center">Invoice</TableCell>
-                            <TableCell align="center">Good</TableCell>
+                            <TableCell align="center">Goods</TableCell>
                             <TableCell align="center">Qnt</TableCell>
                             <TableCell align="center"></TableCell>
                         </TableRow>
