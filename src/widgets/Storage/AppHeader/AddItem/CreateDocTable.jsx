@@ -10,41 +10,53 @@ import {
     TableRow,
     TextField
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete.js";
 import Box from "@mui/material/Box";
 import * as React from "react";
 import {useState} from "react";
 import {
     useClientsList,
-    useCreateStorageDocTable,
+    useCreateStorageDocTable, useDeleteStorageDocTable,
     useGoodsList,
     useStorageDocTableList
 } from "../../../../API/API_HOOKS.js";
+import IconButton from "@mui/material/IconButton";
 
 
 export default function CreateDocTable({openDoc}) {
-
-    const {data: clientsList} = useClientsList()
+    
     const {data: goodsList} = useGoodsList()
     const {data: docTableList} = useStorageDocTableList()
     const [inputProductValue, setInputProductValue] = useState('')
     const [productValue, setProductValue] = useState(null)
     const [qnt, setQnt] = useState(1)
+    const [row, setRow] = useState([])
     const [newStorageDocTable, setNewStorageDocTable] = useState({
         goods_qnt: qnt,
         storage_doc: openDoc.id,
         goods: '',
     })
     const createStorageDocTable = useCreateStorageDocTable(newStorageDocTable)
+    const deleteStorageDocTable = useDeleteStorageDocTable(row)
 
-    const handleChangeProduct = (event, newValue) => {
-        setProductValue(newValue)
-        setNewStorageDocTable({...newStorageDocTable, goods: newValue.id})
-        createStorageDocTable.mutate()
+    const handleChangeProduct = async (event, newValue) => {
+        console.log(newValue)
+        if (newValue && qnt > 0) {
+            setProductValue(newValue)
+            setNewStorageDocTable({...newStorageDocTable, goods: newValue.id, storage_doc: openDoc.id, goods_qnt: qnt})
+            await createStorageDocTable.mutate()
+        }
+        setQnt(1)
+    }
+    const handleClickDeleteProduct = async (rowId) => {
+        setRow(rowId)
+        await deleteStorageDocTable.mutate()
     }
 
     // console.log('goodsList: ', goodsList)
     // console.log('openDoc: ', openDoc)
-    console.log('docTableList: ', docTableList)
+    // console.log('docTableList: ', docTableList)
+    // console.log('row: ', row)
 
     return (
         <>
@@ -87,7 +99,7 @@ export default function CreateDocTable({openDoc}) {
                     sx={{maxWidth: 100}}
                     fullWidth
                     value={qnt}
-                    onChange={e=>setQnt(e.target.value)}
+                    onChange={e => setQnt(e.target.value)}
                 />
             </Stack>
 
@@ -99,6 +111,7 @@ export default function CreateDocTable({openDoc}) {
                             <TableCell align="center">Invoice</TableCell>
                             <TableCell align="center">Good</TableCell>
                             <TableCell align="center">Qnt</TableCell>
+                            <TableCell align="center"></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -111,6 +124,11 @@ export default function CreateDocTable({openDoc}) {
                                 <TableCell align="center">{row.storage_doc}</TableCell>
                                 <TableCell align="center">{row.goods}</TableCell>
                                 <TableCell align="center">{row.goods_qnt}</TableCell>
+                                <TableCell align="center">
+                                    <IconButton sx={{margin: -5}} onClick={() => handleClickDeleteProduct(row)}>
+                                        <DeleteIcon fontSize='small' color='error'/>
+                                    </IconButton>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

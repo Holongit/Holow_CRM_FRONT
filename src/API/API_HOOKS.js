@@ -4,7 +4,7 @@ import {useLogin} from '../pages/login/loginStore.js';
 import {API_STORAGE, API_USERS_ME} from './API_URLS.js';
 import {
     deleteApiStorage,
-    deleteApiStorageDoc,
+    deleteApiStorageDoc, deleteApiStorageDocTable,
     postApiAddStorage,
     postApiStorageDoc, postApiStorageDocTable,
     updateApiStorage
@@ -154,6 +154,15 @@ export const useCreateStorageDocTable = (newStorageDocTable) => {
     const queryClient = useQueryClient()
     return useMutation({
         mutationFn: () => postApiStorageDocTable(newStorageDocTable),
+        onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'doctable']}),
+        onError: (error) => console.log(error),
+    })
+}
+
+export const useDeleteStorageDocTable = (obj) => {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: () => deleteApiStorageDocTable(obj),
         onSuccess: () => queryClient.invalidateQueries({queryKey: ['storage', 'doctable']}),
         onError: (error) => console.log(error),
     })

@@ -40,3 +40,12 @@ export async function deleteApiStorageDoc(obj) {
 export async function postApiStorageDocTable(data) {
     return await API_STORAGE.post('doctable/', data)
 }
+
+export async function deleteApiStorageDocTable(obj) {
+    if (typeof obj === 'object') {
+        const id = obj.id + '/'
+        return await API_STORAGE.delete('doctable/' + id)
+    } else {
+        return await API_STORAGE.delete('doctable/' + obj + '/')
+    }
+}
