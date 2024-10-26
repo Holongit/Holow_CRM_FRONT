@@ -13,7 +13,7 @@ import NoteAddIcon from "@mui/icons-material/NoteAdd.js";
 
 import {useCreateStorageClients} from "../../../../API/API_HOOKS.js";
 
-export default function CreateClient() {
+export default function CreateClient({setNewStorageDoc, newStorageDoc}) {
 
     const [open, setOpen] = useState(false)
     const [clientData, setClientData] = useState({
@@ -28,8 +28,9 @@ export default function CreateClient() {
     const handleClickClose = () => setOpen(false)
     const handleClickAdd = (e) => {
         e.preventDefault()
-        if (clientData.name.length > 2) {
+        if (clientData.name.length > 2 && clientData.name !== 'CRM') {
             createStorageClients.mutate()
+            setNewStorageDoc({...newStorageDoc, client: clientData.name})
             setOpen(false)
         }
     }

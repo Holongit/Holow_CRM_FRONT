@@ -41,7 +41,7 @@ export default function CreateDocTable({openDoc}) {
     const deleteStorageDocTable = useDeleteStorageDocTable(row)
 
     const handleChangeProduct = async (event, newValue) => {
-        console.log(newValue)
+        // console.log(newValue)
         if (newValue && qnt > 0) {
             setProductValue(newValue)
             setNewStorageDocTable({...newStorageDocTable, goods: newValue.id, storage_doc: openDoc.id, goods_qnt: qnt})
@@ -93,6 +93,7 @@ export default function CreateDocTable({openDoc}) {
                     }
                 />
                 <TextField
+                    disabled={openDoc.length === 0}
                     id="outlined-number"
                     label="qnt"
                     type="number"
