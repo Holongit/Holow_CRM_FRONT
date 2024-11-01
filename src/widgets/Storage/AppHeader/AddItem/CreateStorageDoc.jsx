@@ -29,7 +29,7 @@ export default function CreateStorageDoc() {
     const openDocList = storageDocList.filter((doc) => doc.status === 'open' && doc.user === user.username)
     const [openDoc, setOpenDoc] = useState('')
     const deleteSelectedInvoice = useDeleteStorageDoc(openDoc)
-    const patchCloseStorageDoc = usePatchStorageDoc({status: 'close'}, openDoc)
+    const patchCloseStorageDoc = usePatchStorageDoc({status: 'close', api_control: 'close'}, openDoc)
 
     const handleClickOpen = () => {
         setOpen(true)
@@ -64,7 +64,7 @@ export default function CreateStorageDoc() {
 
     // console.log('openDocList: ', openDocList)
     // console.log('storageDocList: ', storageDocList)
-    console.log('openDoc: ', openDoc)
+    // console.log('openDoc: ', openDoc)
     // console.log('currentStorageDoc: ', currentStorageDoc)
     // console.log('newStorageDoc: ', newStorageDoc)
     // console.log('clientsList: ', clientsList)

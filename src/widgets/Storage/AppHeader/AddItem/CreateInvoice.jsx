@@ -105,7 +105,7 @@ export default function CreateInvoice({setOpenDoc}) {
         }
     }, [])
 
-    // console.log('clientsList: ', clientsList)
+    // console.log('newStorageDoc: ', newStorageDoc)
 
     return (
         <>
